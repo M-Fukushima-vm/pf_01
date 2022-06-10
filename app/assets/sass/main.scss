@@ -1,0 +1,50 @@
+:root {
+  --font-eng: Roboto;
+}
+:root {
+  --font-jp: 'Noto Sans JP';
+}
+
+@font-face {
+  font-family: Roboto;
+  src: var(--font-eng);
+  unicode-range: U+0000-007F;
+}
+@font-face {
+  font-family: 'Noto Sans JP';
+  src: var(--font-jp);
+  unicode-range: U+0080-FFFF;
+}
+
+body {
+  font-feature-settings: 'pwid'; //英数カナの文字詰
+  font-family: var(--font-eng), var(--font-jp);
+  letter-spacing: 0.1rem;
+  // text-shadow: 0.03rem 0.03rem 0.06rem #bbcfda,
+  //   -0.015rem -0.015rem 0.04rem #fcfcfc;
+  background: linear-gradient(175deg, #ffffff 40%, #f7f7f7 75%, #edeff1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: 0.2rem;
+  margin: 0.6rem 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
