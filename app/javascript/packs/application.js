@@ -21,6 +21,7 @@ import App from '../app.vue'
 import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
 import 'vuetify/dist/vuetify.min.css'
+import ja from 'vuetify/es5/locale/ja.js'
 Vue.use(Vuetify)
 const vuetify = new Vuetify({
   defaultAssets: {
@@ -45,7 +46,12 @@ const vuetify = new Vuetify({
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
-    vuetify,
+    vuetify: new Vuetify({
+      lang: {
+        locales: { ja },
+        current: 'ja',
+      },
+    }),
     render: h => h(App)
   }).$mount()
   document.body.appendChild(app.$el)
