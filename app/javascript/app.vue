@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app">
+  <v-app id="app" :style="{ background: 'transparent' }">
     <h2 class="primary--text font-weight-thin">{{ message }}</h2>
     <p class="secondary--text">{{ message }}</p>
     <v-btn small color="primary">ボタン</v-btn>
