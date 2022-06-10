@@ -43,6 +43,8 @@ const vuetify = new Vuetify({
     }
   },
 });
+import router from '@/router'
+import store from '@/store'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -52,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         current: 'ja',
       },
     }),
+    router,
+    store,
     render: h => h(App)
   }).$mount()
   document.body.appendChild(app.$el)
