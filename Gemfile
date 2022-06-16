@@ -24,6 +24,8 @@ gem 'jwt'
 
 gem 'active_model_serializers'
 
+gem 'active_storage_base64'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

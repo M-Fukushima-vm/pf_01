@@ -1,5 +1,6 @@
 <template>
   <v-app id="app" :style="{ background: 'transparent' }">
+    <pc-nav></pc-nav>
     <h2 class="primary--text font-weight-thin">{{ message }}</h2>
     <p class="secondary--text">{{ message }}</p>
     <v-btn small color="primary">ボタン</v-btn>
@@ -22,13 +23,17 @@
 </template>
 
 <script>
-export default {
-  data: function () {
-    return {
-      message: "Hello Vue!"
+  import pcNav from '@/components/sideNav/pcNav/PcNav'
+  export default {
+    data: function () {
+      return {
+        message: "Hello Vue!"
+      }
+    },
+    components: {
+      pcNav,
     }
   }
-}
 </script>
 
 <style scoped>

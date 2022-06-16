@@ -45,6 +45,7 @@ const vuetify = new Vuetify({
 });
 import router from '@/router'
 import store from '@/store'
+import userStringParse from '@/userStringParse'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -56,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }),
     router,
     store,
+    userStringParse,
     render: h => h(App)
   }).$mount()
   document.body.appendChild(app.$el)
