@@ -3,7 +3,8 @@
     <v-navigation-drawer
       class="transparent"
       app
-      expand-on-hover
+      mini-variant
+      :expand-on-hover="expandOn"
     >
       <start-area></start-area>
 
