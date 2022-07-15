@@ -125,7 +125,7 @@
             await this.$store.dispatch("auth/login", sessionParams);
             this.$emit("closeForm");
           } catch (error) {
-            alert(error.response.data.error);
+            alert(error.response.data.error.messages);
           }
         }
       },
@@ -142,7 +142,7 @@
             await axios.post(`/api/users`, userParams);
             this.login();
           } catch(err) {
-            alert(err.response.data.error);
+            alert(err.response.data.error.messages);
           }
         }
       },
