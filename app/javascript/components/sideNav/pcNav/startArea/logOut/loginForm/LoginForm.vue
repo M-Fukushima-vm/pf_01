@@ -1,8 +1,10 @@
 <template>
-  <v-list-item class="pa-3" :style="{ background: 'rgba(240, 240, 245, 0.82)' }">
+  <v-list-item
+    class="pt-7 px-7 pb-3"
+    :style="{ background: 'rgba(240, 240, 245, 0.82)' }">
     <v-card outlined color="transparent">
       <v-form ref="form1" lazy-validation>
-        <v-text-field class="py-1"
+        <v-text-field class="py-2 mr-1"
           v-model="email"
           :rules="emailRules"
           label="e-mail:"
@@ -13,15 +15,19 @@
           persistent-hint
         ></v-text-field>
 
-        <v-text-field class="py-1"
+        <v-text-field class="py-2 mr-1"
           v-model="password"
           :rules="passwordRules"
+          :append-icon="toggle.icon"
+          @click.append="showPassword = !showPassword"
+          autocomplete="on"
           label="password:"
           dense
           required
           prepend-icon="mdi-lock-outline"
+          hint="行内クリックで内容確認できます"
           counter
-          type="password"
+          :type="toggle.type"
         ></v-text-field>
 
         <v-card-text class="text-caption secondary--text mt-n3">
@@ -31,7 +37,7 @@
         </v-card-text>
       </v-form>
 
-      <v-card-actions class="mt-n4 mb-n1">
+      <v-card-actions class="mt-n5 mb-n2">
         <v-spacer></v-spacer>
 
         <v-btn icon
@@ -48,7 +54,7 @@
       </v-card-actions>
 
       <v-form ref="form2" lazy-validation>
-        <v-text-field class="py-1"
+        <v-text-field class="py-1 mr-1"
           v-model="name"
           :rules="nameRules"
           label="name:"
@@ -96,9 +102,15 @@
     data: () => ({
       email: "",
       password: "",
+      showPassword: false,
       name: "",
     }),
     computed: {
+      toggle () {
+        const icon = this.showPassword ? 'mdi-eye' : 'mdi-eye-off'
+        const type = this.showPassword ? 'text' : 'password'
+        return { icon, type }
+      },
       emailRules() {
         return [
           (v) => !!v || "Loginには入力必須です",
