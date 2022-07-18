@@ -1,0 +1,12 @@
+ja:
+  activerecord:
+    models:
+      user: 'ユーザー'
+    attributes:
+      user:
+        name: '入力ユーザー名'
+        email: '入力メールアドレス'
+        password_digest: '入力パスワード'
+        avatar_name: '文字アイコン'
+        introduction: '紹介文'
+      

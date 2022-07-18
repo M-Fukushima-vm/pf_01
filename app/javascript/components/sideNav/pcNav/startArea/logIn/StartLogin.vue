@@ -123,7 +123,7 @@
       },
       pushEditOpen() {
         this.toggleEditFlag = !this.toggleEditFlag;
-        this.pushMenuOpen();
+        this.pushMenu = false;
       },
       logout() {
         if (confirm("ログアウトしますか？")) {

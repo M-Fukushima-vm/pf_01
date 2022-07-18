@@ -42,17 +42,19 @@
           :type="toggle.type"
         ></v-text-field>
 
-        <v-text-field class="py-2 mr-2"
+        <v-textarea class="py-3 mr-2"
           v-model="user.introduction"
           label="introduction:"
           dense
+          auto-grow
+          rows="1"
           required
           prepend-icon="mdi-information-outline"
           hint="簡単な自己紹介文など必要あれば入力"
           persistent-hint
-        ></v-text-field>
+        ></v-textarea>
 
-        <v-text-field class="py-2 mr-2"
+        <v-text-field class="py-3 mr-2"
           v-model="user.avatar_name"
           :rules="avatar_nameRules"
           label="avatar_name:"
@@ -65,7 +67,7 @@
         ></v-text-field>
 
         <v-card-text
-          class="text-caption secondary--text text-center mt-n3 mb-n3"
+          class="text-caption secondary--text text-center mt-n1 mb-n5"
           v-show="user.avatar_name"
         >
           ＊ アバター画像が優先されます ＊
@@ -151,12 +153,13 @@
             <!-- sandra_a88@gmail.com -->
             {{ user.email }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle
-            class="mt-3 mb-1 text-center font-weight-thin"
-            v-show="this.user.introduction"
-          >
-            {{ user.introduction }}
-          </v-list-item-subtitle>
+          <v-list-item class="mt-2 mb-n2 justify-center">
+            <div
+              style="white-space: pre-wrap;"
+              class="text-center text-justify font-weight-thin caption"
+              v-text="this.user.introduction"
+            />
+          </v-list-item>
         </v-list-item-content>
       </v-list-item>
 
@@ -280,4 +283,8 @@
 </script>
 
 <style lang="scss" scoped>
+.text-justify {
+  text-justify: distribute;
+  text-align-last: justify;
+}
 </style> 
