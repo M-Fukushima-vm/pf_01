@@ -10,7 +10,8 @@
           align-content="center"
         >
           <v-col cols=12>
-            <color-sample></color-sample>
+            <!-- <color-sample></color-sample> -->
+            <router-view></router-view>
           </v-col>
         </v-row>
       </v-container>
@@ -21,7 +22,7 @@
 <script>
   import pcNav from '@/components/sideNav/pcNav/PcNav'
   import toolBar from '@/components/toolBar/ToolBar'
-  import colorSample from '@/components/colorSample/ColorSample'
+  // import colorSample from '@/components/colorSample/ColorSample'
   export default {
     data: function () {
       return {
@@ -31,7 +32,7 @@
     components: {
       pcNav,
       toolBar,
-      colorSample,
+      // colorSample,
     }
   }
 </script>
