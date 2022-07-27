@@ -1,8 +1,17 @@
 <template>
   <v-container>
+    <v-text-field
+      class="pt-n3 pb-3"
+      prepend-inner-icon="mdi-magnify"
+      persistent-hint
+      hint="入力内容で絞り込み表示できます"
+      persistent-placeholder
+      placeholder="user name"
+      v-model="query.userName"
+      @input="fetchUsers"
+    ></v-text-field>
     <v-list
       three-line
-      class="pt-7"
       :style="{ background: 'transparent' }"
     >
       <template v-for="user in users">
@@ -35,7 +44,7 @@
           <v-list-item-content>
             <v-list-item-title
               v-text="user.name"
-              class="subtitle-1"
+              class="subtitle-1 text--secondary"
             ></v-list-item-title>
             <v-list-item-subtitle
               v-text="user.introduction"
@@ -63,12 +72,17 @@
 
 <script>
 import axios from "axios";
+import qs from "qs";
+
 export default {
   data() {
     return {
       users: [],
       currentPage: 1,
       pagingMeta: null, 
+      query: {
+        userName: "",
+      },
     };
   },
   created() {
@@ -76,9 +90,19 @@ export default {
   },
   methods: {
     async fetchUsers() {
-      const res = await axios.get(`/api/users`, {
-        params: { page: this.currentPage },
-      });
+      // const res = await axios.get(`/api/users`, {
+      //   params: { page: this.currentPage },
+      // });
+      const searchParams = {
+        q: {
+          name: this.query.userName,
+        },
+      };
+      const pagingParams = { page: this.currentPage };
+      const params = { ...searchParams, ...pagingParams };
+      const paramsSerializer = (params) =>
+        qs.stringify(params);
+      const res = await axios.get(`/api/users`, { params, paramsSerializer });
       this.users = res.data.users;
       this.pagingMeta = res.data.meta;
     },

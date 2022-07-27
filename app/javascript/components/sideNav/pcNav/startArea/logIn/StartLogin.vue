@@ -129,6 +129,7 @@
         if (confirm("ログアウトしますか？")) {
           this.$store.dispatch("auth/logout");
           this.pushMenuOpen();
+          this.$router.push('/');
         }
       },
     },
