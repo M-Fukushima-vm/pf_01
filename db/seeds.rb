@@ -22,3 +22,18 @@ User.create(
   avatar_name: "G.U",
   introduction: "ゲストユーザー"
 )
+
+30.times do |n|
+  name  = Gimei.unique.name.romaji
+  email = "example-#{n+1}@email.com"
+  password = "password"
+  avatar_name = name.split.map { |s| s[0]}.join('.').upcase
+  User.create!(
+    name: name,
+    email: email,
+    password:              password,
+    password_confirmation: password,
+    avatar_name: avatar_name,
+  )
+end
+
