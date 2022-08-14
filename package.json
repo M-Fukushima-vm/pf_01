@@ -12,6 +12,7 @@
     "vue-image-crop-upload": "3.0.3",
     "vue-loader": "^15.7.0",
     "vue-router": "^3.5.4",
+    "vue-shortkey": "^3.1.7",
     "vue-template-compiler": "^2.6.12",
     "vuetify": "^2.6.6",
     "vuex": "^3.6.2",

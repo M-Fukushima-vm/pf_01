@@ -13,6 +13,7 @@
           prepend-icon="mdi-email-outline"
           hint="アカウントの認証/登録に必要"
           persistent-hint
+          ref="top"
         ></v-text-field>
 
         <v-text-field class="py-2 mr-1"
@@ -30,7 +31,7 @@
           :type="toggle.type"
         ></v-text-field>
 
-        <v-card-text class="text-caption secondary--text mt-n3">
+        <v-card-text class="text-caption secondary--text text-center mt-n3">
           <span class="text-caption info--text text--darken-3">
             初回は Signin
           </span>から登録して下さい
@@ -124,7 +125,13 @@
         return [(v) => !!v || "Signinには入力必須です"];
       },
     },
+    mounted() {
+      this.$nextTick( () => this.formFocus() )
+    },
     methods: {
+      formFocus() {
+        this.$refs.top.focus()
+      },
       async login() {
         if (this.$refs.form1.validate()) {
           try {

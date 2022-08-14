@@ -46,6 +46,7 @@ const vuetify = new Vuetify({
 import router from '@/router'
 import store from '@/store'
 import userStringParse from '@/userStringParse'
+import shortkey from '@/vueShortkey'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     router,
     store,
     userStringParse,
+    shortkey,
     render: h => h(App)
   }).$mount()
   document.body.appendChild(app.$el)
