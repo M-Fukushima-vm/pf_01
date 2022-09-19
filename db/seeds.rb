@@ -23,6 +23,24 @@ User.create(
   introduction: "ゲストユーザー"
 )
 
+User.create(
+  name: "test user1",
+  email: "test-1@email.com",
+  password: "password", 
+  password_confirmation: "password", 
+  avatar_name: "T.1",
+  introduction: "テストユーザー1"
+)
+
+User.create(
+  name: "test user2",
+  email: "test-2@email.com",
+  password: "password", 
+  password_confirmation: "password", 
+  avatar_name: "T.2",
+  introduction: "テストユーザー2"
+)
+
 30.times do |n|
   name  = Gimei.unique.name.romaji
   email = "example-#{n+1}@email.com"
@@ -36,4 +54,28 @@ User.create(
     avatar_name: avatar_name,
   )
 end
+
+# フォローイング
+tester = User.first
+guest = User.find(2)
+samples = User.where(id: [3..4]).order(id: :asc)
+dammies = User.where(id: [5..34]).order(id: :asc)
+  # テストユーザー関係
+    # テストユーザーがフォロー
+      samples.each { |sample| tester.active_relationships.create(followed_id: sample.id) }
+      dammies.each { |dammy| tester.active_relationships.create(followed_id: dammy.id) }
+    # テストユーザーをフォロー
+      samples.each { |sample| sample.active_relationships.create(followed_id: tester.id) }
+      dammies.each { |dammy| dammy.active_relationships.create(followed_id: tester.id) }
+
+  # ゲストユーザー関係
+    # ゲストユーザーがフォロー
+      guest.active_relationships.create(followed_id: 4)
+    # ゲストユーザーをフォロー
+      samples.each { |sample| sample.active_relationships.create(followed_id: guest.id) }
+
+  # 相互フォロー
+      dammies.to_a.permutation(2) do |user1, user2|
+        user1.active_relationships.create(followed_id: user2.id)
+      end
 

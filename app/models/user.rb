@@ -10,4 +10,24 @@ class User < ApplicationRecord
 
   # 検索したい文字列が含まれているレコードを返す
   scope :by_name, ->(name) { where('name LIKE ?', "%#{name}%") }
+
+  # (自分が)フォローしているユーザー
+  has_many :active_relationships, class_name: "Relationship", # 特定用
+                                  foreign_key: "follower_id",
+                                  dependent: :destroy
+  has_many :followings, through: :active_relationships, source: :followed # 取得用
+
+  # (自分を)フォローしているユーザー
+  has_many :passive_relationships, class_name:  "Relationship", # 特定用
+                                    foreign_key: "followed_id",
+                                    dependent:   :destroy
+  has_many :followers, through: :passive_relationships, source: :follower # 取得用
+
+  # 友達（互いにフォローしている）をデータベースから取得
+  def matchers
+    # 重複を配列で返す "&"メソッド で
+    # has_many の followings・followers の重複を返す => 使用例： current_user.matchers
+    followings & followers
+  end
+
 end

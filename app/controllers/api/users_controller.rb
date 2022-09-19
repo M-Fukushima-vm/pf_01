@@ -1,4 +1,6 @@
 class Api::UsersController < ApplicationController
+  before_action :authenticate, only: %i[index followings followers]
+
   PAGINATES_PAR = 8
 
   def create
@@ -12,13 +14,28 @@ class Api::UsersController < ApplicationController
     search_users_form = SearchUsersForm.new(search_params)
     users = search_users_form.search
                               .where.not(id: [ 1, 2, current_user&.id ]).order(name: :asc)
-    users = users.page(params[:page]).per(PAGINATES_PAR)
-    render json: users, each_serializer: UserSerializer,
+    # users = users.page(params[:page]).per(PAGINATES_PAR)
+    users = users.includes(:followings, :followers)
+                  .page(params[:page]).per(PAGINATES_PAR)
+    # debugger
+    render json: users, each_serializer: OtherUserSerializer,
                         meta: {
                           total_pages: users.total_pages,
                           total_count: users.total_count,
                           current_page: users.current_page
                         }
+  end
+
+  def followings
+    user  = User.find(params[:id])
+    user_followings = user.followings
+    render json: user_followings, each_serializer: FollowingSerializer
+  end
+
+  def followers
+    user  = User.find(params[:id])
+    user_followers = user.followers
+    render json: user_followers, each_serializer: FollowingSerializer
   end
 
   private

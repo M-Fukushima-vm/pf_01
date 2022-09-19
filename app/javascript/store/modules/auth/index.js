@@ -9,6 +9,8 @@ const state = {
 const getters = {
   currentUser: (state) => state.currentUser,
   currentUserAvatar: (state) => state.currentUser.avatar_url,
+  // 指定のプロパティを省いた state.currentUser のサブセット(other) を返す
+  reference_currentUser: (state) => (({ email, token, ...other }) => other)(state.currentUser)
 };
 
 // vuex版のmethods ... 詳細内容をまとめて置くだけにし、
