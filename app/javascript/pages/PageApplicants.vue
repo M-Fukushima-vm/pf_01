@@ -1,21 +1,21 @@
 <template>
   <div>
-    <users-tool-bar></users-tool-bar>
+    <applicants-tool-bar></applicants-tool-bar>
     <v-row>
       <v-col>
-        <users-list></users-list>
+        <applicants-list></applicants-list>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-  import usersToolBar from '@/components/toolBar/UsersToolBar'
-  import usersList from '@/components/lists/UsersList'
+  import applicantsToolBar from '@/components/toolBar/ApplicantsToolBar'
+  import applicantsList from '@/components/lists/ApplicantsList'
   export default {
     components: {
-      usersToolBar,
-      usersList,
+      applicantsToolBar,
+      applicantsList,
     },
     created() {
       // 読み込みの確認用

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     # resources :users, only: %i[create index]
     resources :users do
       member do
-        get :followings, :followers
+        get :followings, :followers, :mates, :applicants
       end
     end
     resource :session, only: %i[create]

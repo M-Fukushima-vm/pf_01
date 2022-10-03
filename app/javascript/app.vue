@@ -1,7 +1,7 @@
 <template>
   <v-app id="app" :style="{ background: 'transparent' }">
     <pc-nav></pc-nav>
-    <tool-bar></tool-bar>
+    <!-- <tool-bar></tool-bar> -->
     <v-main>
       <v-container>
         <v-row
@@ -21,7 +21,7 @@
 
 <script>
   import pcNav from '@/components/sideNav/pcNav/PcNav'
-  import toolBar from '@/components/toolBar/ToolBar'
+  // import toolBar from '@/components/toolBar/ToolBar'
   // import colorSample from '@/components/colorSample/ColorSample'
   export default {
     data: function () {
@@ -31,7 +31,7 @@
     },
     components: {
       pcNav,
-      toolBar,
+      // toolBar,
       // colorSample,
     }
   }
