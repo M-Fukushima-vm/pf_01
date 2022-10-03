@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  before_action :authenticate, only: %i[index followings followers]
+  before_action :authenticate, only: %i[index followings followers mates applicants]
 
   PAGINATES_PAR = 8
 
@@ -27,15 +27,47 @@ class Api::UsersController < ApplicationController
   end
 
   def followings
-    user  = User.find(params[:id])
+    user = User.find(params[:id])
     user_followings = user.followings
     render json: user_followings, each_serializer: FollowingSerializer
   end
 
   def followers
-    user  = User.find(params[:id])
+    user = User.find(params[:id])
     user_followers = user.followers
     render json: user_followers, each_serializer: FollowingSerializer
+  end
+
+  def mates
+    search_mates_form = SearchMatesForm.new(search_params)
+    users = search_mates_form.search(params[:id]).order(name: :asc)
+    # debugger
+    users = users.includes(:followings, :followers)
+                  .page(params[:page]).per(PAGINATES_PAR)
+    render json: users, each_serializer: OtherUserSerializer,
+                        meta: {
+                          total_pages: users.total_pages,
+                          total_count: users.total_count,
+                          current_page: users.current_page
+                        }
+  end
+
+  def applicants
+    search_mates_form = SearchMatesForm.new(search_params)
+    users = search_mates_form.search(params[:id]).order(name: :asc)
+    mates = users
+    search_applicants_form = SearchApplicantsForm.new(search_params)
+    applicants = search_applicants_form.search(params[:id], mates).order(name: :asc)
+    # debugger
+    users = applicants.includes(:followings, :followers)
+                            .page(params[:page]).per(PAGINATES_PAR)
+    render json: users, each_serializer: OtherUserSerializer,
+                        meta: {
+                          total_pages: users.total_pages,
+                          total_count: users.total_count,
+                          current_page: users.current_page
+                        }
+    # debugger
   end
 
   private

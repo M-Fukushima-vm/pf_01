@@ -1,21 +1,23 @@
 <template>
   <div>
-    <users-tool-bar></users-tool-bar>
+    <mates-tool-bar></mates-tool-bar>
     <v-row>
       <v-col>
-        <users-list></users-list>
+        <mates-list></mates-list>
       </v-col>
+
     </v-row>
   </div>
 </template>
 
 <script>
-  import usersToolBar from '@/components/toolBar/UsersToolBar'
-  import usersList from '@/components/lists/UsersList'
+  import matesToolBar from '@/components/toolBar/MatesToolBar'
+  import matesList from '@/components/lists/MatesList'
   export default {
     components: {
-      usersToolBar,
-      usersList,
+      matesToolBar,
+      matesList,
+      
     },
     created() {
       // 読み込みの確認用

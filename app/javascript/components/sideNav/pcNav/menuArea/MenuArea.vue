@@ -41,6 +41,16 @@
         </v-list-item-icon>
         <v-list-item-title>Search Users</v-list-item-title>
       </v-list-item>
+      <v-list-item
+        v-if="$store.getters['auth/currentUser']"
+        to="/mates"
+        link
+        class="px-1 mx-1">
+        <v-list-item-icon>
+          <v-icon>mdi-account-switch-outline</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Mates</v-list-item-title>
+      </v-list-item>
     </v-list-item-group>
   </div>
 </template>
@@ -52,5 +62,7 @@
 </script>
 
 <style lang="scss" scoped>
-
+.v-list-item {
+  text-decoration: none;
+}
 </style>
