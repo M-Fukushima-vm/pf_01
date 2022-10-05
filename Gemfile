@@ -30,6 +30,8 @@ gem 'active_storage_base64'
 
 gem 'kaminari'
 
+gem 'ridgepole'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
