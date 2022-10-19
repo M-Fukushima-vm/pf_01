@@ -1,9 +1,10 @@
 <template>
   <v-container>
-    <v-row v-if="!this.users.length">
-      <v-col
-        class="text-center text-caption grey--text mb-n5"
-      >
+    <v-row
+      v-if="!this.users.length"
+      class="text-center text-caption grey--text"
+    >
+      <v-col>
         <v-icon
           color="grey lighten-1"
           class="mb-1"
@@ -11,19 +12,24 @@
         * ユーザー一覧を取得・表示します *
       </v-col>
     </v-row>
-    <v-row v-if="this.users.length">
+    <v-row
+      v-if="this.users.length"
+      class="text-center text-caption grey--text"
+    >
       <v-col>
-        <div
-          class="text-center text-caption grey--text ml-n3"
-        >
+        <div>
           <v-icon
             color="grey lighten-1"
             class="mb-1"
           >mdi-cat</v-icon>
           * ユーザー一覧を表示中 *
         </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <v-text-field
-          class="pt-n3 pb-3"
+          class="pt-n3 mt-n3 pb-3"
           prepend-inner-icon="mdi-magnify"
           persistent-hint
           hint="入力内容で絞り込み表示 (フォーカスは shift + space )"
@@ -36,6 +42,7 @@
           ref="searchUser"
         ></v-text-field>
         <v-list
+          v-if="this.users.length"
           two-line
           :style="{ background: 'transparent' }"
           width="300"
@@ -104,7 +111,7 @@
           width="350"
           v-show="onFocus"
         >
-          <v-col class="pl-9 pr-n9 py-9 ml-9 mr-n9 my-9" v-model="tmp">
+          <v-col class="pl-9 pr-n9 py-6 ml-9 mr-n9 my-6" v-model="tmp">
             <v-spacer class="pl-9 pr-n9 py-5 ml-9 mr-n9 my-5"></v-spacer>
             <v-divider/>
             <v-list-item-subtitle class="text-caption grey--text">
@@ -187,6 +194,14 @@
                 </v-list-item>
               </v-list-item-content>
             </v-list-item>
+
+            <!-- <v-list-item-subtitle
+              class="text-center text-caption grey--text mt-n3"
+              v-if="this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
+            >
+              * 次回以降、非表示 にします *
+            </v-list-item-subtitle> -->
+
             <v-divider/>
 
             <v-list-item-group>
@@ -205,7 +220,7 @@
                     >
                       <div>
                         <v-icon>mdi-heart-plus-outline</v-icon>
-                        <v-list-item-title class="text-caption">follow</v-list-item-title>
+                        <v-list-item-title class="text-caption">Re: follow</v-list-item-title>
                       </div>
                     </v-btn>
                   </v-list-item-icon>
@@ -228,6 +243,42 @@
                     </v-btn>
                   </v-list-item-icon>
                 </v-col>
+
+                <!-- <v-col
+                  class="justify-center pl-9 mr-n9"
+                  v-if="!this.current_user_mutings.some( muting_user => muting_user.id === this.tmp.id )"
+                >
+                  <v-list-item-icon>
+                    <v-btn
+                      icon
+                      color="primary darken-1"
+                      @click="muteUser"
+                    >
+                      <div>
+                        <v-icon>mdi-volume-off</v-icon>
+                        <v-list-item-title class="text-caption">Mute</v-list-item-title>
+                      </div>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-col>
+
+                <v-col
+                  class="justify-center pl-9 mr-n9"
+                  v-if="this.current_user_mutings.some( muting_user => muting_user.id === this.tmp.id )"
+                >
+                  <v-list-item-icon>
+                    <v-btn
+                      icon
+                      color="primary darken-1"
+                      @click="unmuteUser" 
+                    >
+                      <div>
+                        <v-icon>mdi-volume-low</v-icon>
+                        <v-list-item-title class="text-caption">Unmute</v-list-item-title>
+                      </div>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-col> -->
                 
                 <v-spacer/>
               </v-row>
@@ -279,10 +330,6 @@
                       v-text="both_user.name"
                       class="subtitle-1 text--secondary"
                     ></v-list-item-title>
-                    <!-- <v-list-item-subtitle
-                      v-text="user.introduction"
-                      class="caption"
-                    ></v-list-item-subtitle> -->
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -316,12 +363,14 @@ export default {
       current_user: "",
       current_user_followings: [],
       both_users: [],
+      current_user_mutings: [],
     };
   },
-  created() {
+  async created() {
+    await this.getCurrentUser();
     this.fetchUsers();
-    this.getCurrentUser();
     this.getCurrentUserFollowings();
+    this.getCurrentUserMutings();
   },
   methods: {
     searchFocus() {
@@ -356,24 +405,6 @@ export default {
             this.both_users = selected
           } else {}
       this.onFocus = true
-    },
-    async fetchUsers() {
-      // const res = await axios.get(`/api/users`, {
-      //   params: { page: this.currentPage },
-      // });
-      const searchParams = {
-        q: {
-          name: this.query.userName,
-        },
-      };
-      const pagingParams = { page: this.currentPage };
-      const params = { ...searchParams, ...pagingParams };
-      const paramsSerializer = (params) =>
-        qs.stringify(params);
-      const res = await axios.get(`/api/users`, { params, paramsSerializer });
-      this.users = res.data.users;
-      this.pagingMeta = res.data.meta;
-      this.currentPage = 1;
     },
     paging(pageNumber) {
       this.currentPage = pageNumber;
@@ -455,7 +486,61 @@ export default {
       const res = await axios.get(`/api/users/${current_user.id}/followings`);
       this.current_user_followings = res.data.users
       // console.log(this.current_user_followings)
-    }
+    },
+    async fetchUsers() {
+      const searchParams = {
+        q: {
+          name: this.query.userName,
+        },
+      };
+      const pagingParams = { page: this.currentPage };
+      const params = { ...searchParams, ...pagingParams };
+      const paramsSerializer = (params) =>
+        qs.stringify(params);
+      const current_user = this.$store.getters['auth/reference_currentUser']
+      const res = await axios.get(`/api/users`, { params, paramsSerializer });
+      this.users = res.data.users
+      // console.log(res.data.users)
+      this.pagingMeta = res.data.meta;
+      this.currentPage = 1;
+      this.$nextTick( () => this.searchFocus() );
+    },
+    async muteUser(){
+      // post リクエストの送信
+      const targetUser = {
+        target: {
+          id: this.tmp.id
+        }
+      };
+      const params = { ...targetUser };
+      await axios.post(`/api/mute_users`, params );
+
+      // 表示データ(data) の配列操作
+        // current_user_followingsの配列 に追加
+        const addMuting = {
+          id: this.tmp.id,
+          name: this.tmp.name
+        }
+        this.current_user_mutings.push(addMuting)
+    },
+    async getCurrentUserMutings() {
+      const current_user = this.$store.getters['auth/reference_currentUser']
+      const res = await axios.get(`/api/users/${current_user.id}/muting_users`);
+      this.current_user_mutings = res.data.users
+      // console.log(this.current_user_mutings)
+    },
+    async unmuteUser() {
+      // delete リクエストの送信
+      await axios.delete(`/api/mute_users/${this.tmp.id}`);
+
+      // 表示データ(data) の配列操作
+        // current_user_mutingsの配列内 から プレビューのユーザーを削除
+        const index_cu_mutings = this.current_user_mutings
+                                    .findIndex(({id}) => id === this.tmp.id)
+        if (index_cu_mutings !== -1) {
+          this.current_user_mutings.splice(index_cu_mutings, 1)
+        }
+    },
   },
 };
 </script>

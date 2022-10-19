@@ -9,7 +9,7 @@
           color="grey lighten-1"
           class="mb-1"
         >mdi-cat</v-icon>
-        * 相互フォローのユーザー がいる場合、表示します *
+        * ミュート中のユーザー がいる場合、表示します *
       </v-col>
     </v-row>
     <v-row
@@ -22,7 +22,7 @@
             color="grey lighten-1"
             class="mb-1"
           >mdi-cat</v-icon>
-          * 相互フォローのユーザー を表示中 *
+          * ミュート中のユーザー を表示中 *
         </div>
       </v-col>
     </v-row>
@@ -197,9 +197,9 @@
 
             <v-list-item-subtitle
               class="text-center text-caption grey--text mt-n3"
-              v-if="this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
+              v-if="!this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
             >
-              * 次回以降、非表示 にします *
+              * あなたをフォローしたユーザー に再表示します *
             </v-list-item-subtitle>
 
             <v-divider/>
@@ -498,7 +498,7 @@ export default {
       const paramsSerializer = (params) =>
         qs.stringify(params);
       const current_user = this.$store.getters['auth/reference_currentUser']
-      const res = await axios.get(`/api/users/${this.current_user.id}/mates`, { params, paramsSerializer });
+      const res = await axios.get(`/api/users/${this.current_user.id}/muting_users`, { params, paramsSerializer });
       this.users = res.data.users
       // console.log(res.data.users)
       this.pagingMeta = res.data.meta;
