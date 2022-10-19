@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mates-tool-bar></mates-tool-bar>
+    <users-tool-bar></users-tool-bar>
     <v-row>
       <v-col>
         <mates-list></mates-list>
@@ -11,11 +11,11 @@
 </template>
 
 <script>
-  import matesToolBar from '@/components/toolBar/MatesToolBar'
+  import usersToolBar from '@/components/toolBar/UsersToolBar'
   import matesList from '@/components/lists/MatesList'
   export default {
     components: {
-      matesToolBar,
+      usersToolBar,
       matesList,
       
     },

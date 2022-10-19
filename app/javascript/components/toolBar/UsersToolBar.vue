@@ -10,9 +10,33 @@
       <v-list-item-icon>
         <v-btn
           link
+          to="/mates"
+          icon
+          class="mx-4 mt-1"
+        >
+          <div>
+            <v-icon class="ml-2">mdi-account-switch-outline</v-icon>
+            <v-list-item-title class="text-caption">Mates</v-list-item-title>
+          </div>
+        </v-btn>
+
+        <v-btn
+          link
+          to="/users"
+          icon
+          class="mx-4 mt-1"
+        >
+          <div>
+            <v-icon class="ml-3">mdi-account-search-outline</v-icon>
+            <v-list-item-title class="text-caption">Search</v-list-item-title>
+          </div>
+        </v-btn>
+
+        <v-btn
+          link
           to="/applicants"
           icon
-          class="mx-3"
+          class="mx-4 mt-1"
         >
           <div>
             <v-icon class="ml-3">mdi-account-alert-outline</v-icon>
@@ -22,13 +46,13 @@
 
         <v-btn
           link
-          to="/mates"
+          to="/mute_users"
           icon
-          class="mx-3"
+          class="mx-3 mt-1"
         >
           <div>
-            <v-icon class="ml-2">mdi-account-switch-outline</v-icon>
-            <v-list-item-title class="text-caption">Mates</v-list-item-title>
+            <v-icon class="ml-1">mdi-account-minus-outline</v-icon>
+            <v-list-item-title class="text-caption">Mute</v-list-item-title>
           </div>
         </v-btn>
 

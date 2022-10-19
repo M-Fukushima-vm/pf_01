@@ -24,10 +24,22 @@ class User < ApplicationRecord
   has_many :followers, through: :passive_relationships, source: :follower # 取得用
 
   # 友達（互いにフォローしている）をデータベースから取得
-  def matchers
+  def mates
     # 重複を配列で返す "&"メソッド で
     # has_many の followings・followers の重複を返す => 使用例： current_user.matchers
     followings & followers
   end
+
+  # (自分が)ミュートしているユーザー
+  has_many :active_mute_users, class_name: "MuteUser",	# 特定用
+                                foreign_key: "mute_user_id",
+                                dependent: :destroy
+  has_many :muting_users, through: :active_mute_users, source: :muted	# 取得用
+
+  # チェイン元(自分含む) をミュートしているユーザー
+	has_many :passive_mute_users, class_name:  "MuteUser",	# 特定用
+                                foreign_key: "muted_id",
+                                dependent: :destroy
+  has_many :muting_left_users, through: :passive_mute_users, source: :mute_user	# 取得用
 
 end
