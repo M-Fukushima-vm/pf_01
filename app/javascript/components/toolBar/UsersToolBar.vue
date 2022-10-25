@@ -56,6 +56,18 @@
           </div>
         </v-btn>
 
+        <v-btn
+          link
+          to="/block_users"
+          icon
+          class="mx-4 mt-1"
+        >
+          <div>
+            <v-icon class="ml-2">mdi-account-cancel-outline</v-icon>
+            <v-list-item-title class="text-caption">Block</v-list-item-title>
+          </div>
+        </v-btn>
+
       </v-list-item-icon>
       <v-spacer></v-spacer>
     </v-list-item>

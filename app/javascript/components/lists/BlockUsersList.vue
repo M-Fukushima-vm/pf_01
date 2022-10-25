@@ -9,7 +9,7 @@
           color="grey lighten-1"
           class="mb-1"
         >mdi-cat</v-icon>
-        * 相互フォローのユーザー がいる場合、表示します *
+        * ブロックしたユーザー がいる場合、表示します *
       </v-col>
     </v-row>
     <v-row
@@ -22,7 +22,7 @@
             color="grey lighten-1"
             class="mb-1"
           >mdi-cat</v-icon>
-          * 相互フォローのユーザー を表示中 *
+          * ブロックしたユーザー を表示中 *
         </div>
       </v-col>
     </v-row>
@@ -197,7 +197,7 @@
 
             <v-list-item-subtitle
               class="text-center text-caption grey--text mt-n3"
-              v-if="!this.current_user_followings.some( following => following.id === this.tmp.id ) || this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
+              v-if="!this.current_user_blockings.some( blocking_user => blocking_user.id === this.tmp.id )"
             >
               * 次回以降、非表示 にします *
             </v-list-item-subtitle>
@@ -206,11 +206,11 @@
 
             <v-list-item-group>
               <v-row
-                class="ml-n9"
+                class="ml-2"
               >
                 <v-spacer/>
 
-                <v-col
+                <!-- <v-col
                   class="justify-center pl-9 mr-n9"
                   v-if="!this.current_user_followings.some( following => following.id === this.tmp.id )"
                 >
@@ -280,7 +280,7 @@
                       </div>
                     </v-btn>
                   </v-list-item-icon>
-                </v-col>
+                </v-col> -->
 
                 <v-col
                   class="justify-center pl-7 mr-n7"
@@ -546,7 +546,7 @@ export default {
       const paramsSerializer = (params) =>
         qs.stringify(params);
       const current_user = this.$store.getters['auth/reference_currentUser']
-      const res = await axios.get(`/api/users/${this.current_user.id}/mates`, { params, paramsSerializer });
+      const res = await axios.get(`/api/users/${this.current_user.id}/blocking_users`, { params, paramsSerializer });
       this.users = res.data.users
       // console.log(res.data.users)
       this.pagingMeta = res.data.meta;

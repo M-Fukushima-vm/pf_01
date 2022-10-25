@@ -42,4 +42,16 @@ class User < ApplicationRecord
                                 dependent: :destroy
   has_many :muting_left_users, through: :passive_mute_users, source: :mute_user	# 取得用
 
+  # (自分が)ブロックしているユーザー
+  has_many :active_block_users, class_name: "BlockUser",	# 特定用
+                                foreign_key: "block_user_id",
+                                dependent: :destroy
+  has_many :blocking_users, through: :active_block_users, source: :blocked	# 取得用
+
+  # チェイン元(自分含む) をブロックしているユーザー
+	has_many :passive_block_users, class_name: "BlockUser",	# 特定用
+                                  foreign_key: "blocked_id",
+                                  dependent: :destroy
+  has_many :blocking_left_users, through: :passive_block_users, source: :block_user	# 取得用
+
 end
