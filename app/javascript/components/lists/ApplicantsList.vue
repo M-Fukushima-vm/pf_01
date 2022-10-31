@@ -197,7 +197,7 @@
 
             <v-list-item-subtitle
               class="text-center text-caption grey--text mt-n3"
-              v-if="this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
+              v-if="this.current_user_blockings.some( blocking_user => blocking_user.id === this.tmp.id ) || this.current_user_mutings.some( mute_user => mute_user.id === this.tmp.id )"
             >
               * 次回以降、非表示 にします *
             </v-list-item-subtitle>
@@ -205,7 +205,9 @@
             <v-divider/>
 
             <v-list-item-group>
-              <v-row>
+              <v-row
+                class="ml-n9"
+              >
                 <v-spacer/>
 
                 <v-col
@@ -279,7 +281,43 @@
                     </v-btn>
                   </v-list-item-icon>
                 </v-col>
+
+                <v-col
+                  class="justify-center pl-7 mr-n7"
+                  v-if="!this.current_user_blockings.some( blocking_user => blocking_user.id === this.tmp.id )"
+                >
+                  <v-list-item-icon>
+                    <v-btn
+                      icon
+                      color="accent"
+                      @click="blockUser"
+                    >
+                      <div>
+                        <v-icon>mdi-cancel</v-icon>
+                        <v-list-item-title class="text-caption">Block</v-list-item-title>
+                      </div>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-col>
                 
+                <v-col
+                  class="justify-center pl-7 mr-n7"
+                  v-if="this.current_user_blockings.some( blocking_user => blocking_user.id === this.tmp.id )"
+                >
+                  <v-list-item-icon>
+                    <v-btn
+                      icon
+                      color="primary darken-1"
+                      @click="unblockUser"
+                    >
+                      <div>
+                        <v-icon>mdi-stop-circle-outline</v-icon>
+                        <v-list-item-title class="text-caption">Unblock</v-list-item-title>
+                      </div>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-col>
+
                 <v-spacer/>
               </v-row>
             </v-list-item-group>
@@ -364,6 +402,7 @@ export default {
       current_user_followings: [],
       both_users: [],
       current_user_mutings: [],
+      current_user_blockings: [],
     };
   },
   async created() {
@@ -371,6 +410,7 @@ export default {
     this.fetchUsers();
     this.getCurrentUserFollowings();
     this.getCurrentUserMutings();
+    this.getCurrentUserBlockings();
   },
   methods: {
     searchFocus() {
@@ -440,6 +480,14 @@ export default {
                                         .findIndex(({id}) => id === this.current_user.id)
         if (index_u_followers === -1) {
           user.followers.push(addFollowing)
+        }
+
+      // current_user_blockingsの配列内の プレビューと一致するid を抽出
+        const index_cu_blockings = this.current_user_blockings
+                                    .findIndex(({id}) => id === this.tmp.id)
+      // 一致があったら unblockUser() を実行
+        if (index_cu_blockings !== -1) {
+          this.$nextTick( () => this.unblockUser() );
         }
     },
     async unfollowUser(){
@@ -540,6 +588,58 @@ export default {
                                     .findIndex(({id}) => id === this.tmp.id)
         if (index_cu_mutings !== -1) {
           this.current_user_mutings.splice(index_cu_mutings, 1)
+        }
+    },
+    async blockUser(){
+      // post リクエストの送信
+      const targetUser = {
+        target: {
+          id: this.tmp.id
+        }
+      };
+      const params = { ...targetUser };
+      await axios.post(`/api/block_users`, params );
+
+      // 表示データ(data) の配列操作
+        // current_user_blockingsの配列 に追加
+        const addBlocking = {
+          id: this.tmp.id,
+          name: this.tmp.name
+        }
+        this.current_user_blockings.push(addBlocking)
+      
+      // current_user_followingsの配列内の プレビューと一致するid を抽出
+        const index_cu_following = this.current_user_followings
+                                    .findIndex(({id}) => id === this.tmp.id)
+      // 一致があったら unfollowUser() を実行
+        if (index_cu_following !== -1) {
+          this.$nextTick( () => this.unfollowUser() );
+        }
+
+      // current_user_mutingsの配列内の プレビューと一致するid を抽出
+        const index_cu_mutings = this.current_user_mutings
+                                    .findIndex(({id}) => id === this.tmp.id)
+      // 一致があったら unmuteUser() を実行
+        if (index_cu_mutings !== -1) {
+          this.$nextTick( () => this.unmuteUser() );
+        }
+    },
+    async getCurrentUserBlockings() {
+      const current_user = this.$store.getters['auth/reference_currentUser']
+      const res = await axios.get(`/api/users/${current_user.id}/blocking_users`);
+      this.current_user_blockings = res.data.users
+      // console.log(this.current_user_blockings)
+    },
+    async unblockUser() {
+      // delete リクエストの送信
+      await axios.delete(`/api/block_users/${this.tmp.id}`);
+
+			// 表示データ(data) の配列操作
+        // current_user_blockingsの配列内 から プレビューのユーザーを削除
+        const index_cu_blockings = this.current_user_blockings
+                                    .findIndex(({id}) => id === this.tmp.id)
+        if (index_cu_blockings !== -1) {
+          this.current_user_blockings.splice(index_cu_blockings, 1)
         }
     },
   },

@@ -6,6 +6,7 @@ import PageUsers from "@/pages/PageUsers"
 import PageMates from "@/pages/PageMates"
 import PageApplicants from "@/pages/PageApplicants"
 import PageMuteUsers from "@/pages/PageMuteUsers"
+import PageBlockUsers from "@/pages/PageBlockUsers"
 const router = new VueRouter({
     routes: [
       { path: "/", component: colorSample, name: "top" },
@@ -13,6 +14,7 @@ const router = new VueRouter({
       { path: "/mates", component: PageMates, name: "mates" },
       { path: "/applicants", component: PageApplicants, name: "applicants" },
       { path: "/mute_users", component: PageMuteUsers, name: "mute_users" },
+      { path: "/block_users", component: PageBlockUsers, name: "block_users" },
     ],
 });
 

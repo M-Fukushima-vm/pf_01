@@ -1,5 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'block_users.schema.rb'
 require 'mute_users.schema.rb'
 require 'active_storage_attachments.schema.rb'
 require 'active_storage_blobs.schema.rb'

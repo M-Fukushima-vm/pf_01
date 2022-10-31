@@ -5,7 +5,7 @@ class User < ApplicationRecord
   validates :password_digest, presence: true, length: { minimum: 4 }, allow_nil: true # 空パスワードのアップデートを許容
   validates :avatar_name, length: {maximum: 3}
 
-  has_one_base64_attached :avatar # 1つの画像データ添付を設定する場合
+  has_one_base64_attached :avatar, strict_loading: true # 1つの画像データ添付を設定する場合
   # has_many_base64_attached :avatar # 複数の画像データ添付を設定する場合
 
   # 検索したい文字列が含まれているレコードを返す
@@ -41,5 +41,17 @@ class User < ApplicationRecord
                                 foreign_key: "muted_id",
                                 dependent: :destroy
   has_many :muting_left_users, through: :passive_mute_users, source: :mute_user	# 取得用
+
+  # (自分が)ブロックしているユーザー
+  has_many :active_block_users, class_name: "BlockUser",	# 特定用
+                                foreign_key: "block_user_id",
+                                dependent: :destroy
+  has_many :blocking_users, through: :active_block_users, source: :blocked	# 取得用
+
+  # チェイン元(自分含む) をブロックしているユーザー
+	has_many :passive_block_users, class_name: "BlockUser",	# 特定用
+                                  foreign_key: "blocked_id",
+                                  dependent: :destroy
+  has_many :blocking_left_users, through: :passive_block_users, source: :block_user	# 取得用
 
 end
