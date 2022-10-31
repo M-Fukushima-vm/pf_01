@@ -10,13 +10,12 @@ class Api::UsersController < ApplicationController
   end
 
   def index
-    # users = User.where.not(id: [ 1, 2, current_user.id ]).order(name: :asc)
+    # users = User.where.not(id: [ 1..4, current_user.id ]).order(name: :asc)
     search_users_form = SearchUsersForm.new(search_params)
-    users = search_users_form.search
-                              .where.not(id: [ 1, 2, current_user&.id ]).order(name: :asc)
+    users = search_users_form.search( current_user.id )
+                              .where.not(id: [ 1..4, current_user&.id ]).order(name: :asc)
     # users = users.page(params[:page]).per(PAGINATES_PAR)
-    users = users.includes(:followings, :followers)
-                  .page(params[:page]).per(PAGINATES_PAR)
+    users = users.page(params[:page]).per(PAGINATES_PAR)
     # debugger
     render json: users, each_serializer: OtherUserSerializer,
                         meta: {
@@ -27,23 +26,22 @@ class Api::UsersController < ApplicationController
   end
 
   def followings
-    user = User.find(params[:id])
-    user_followings = user.followings
-    render json: user_followings, each_serializer: FollowingSerializer
+    user = User.with_attached_avatar.includes(:followings).find(params[:id])
+    users = user.followings
+    render json: users, each_serializer: FollowingSerializer
   end
 
   def followers
-    user = User.find(params[:id])
-    user_followers = user.followers
-    render json: user_followers, each_serializer: FollowingSerializer
+    user = User.with_attached_avatar.includes(:followers).find(params[:id])
+    users = user.followers
+    render json: users, each_serializer: FollowingSerializer
   end
 
   def mates
     search_mates_form = SearchMatesForm.new(search_params)
     users = search_mates_form.search(params[:id]).order(name: :asc)
     # debugger
-    users = users.includes(:followings, :followers)
-                  .page(params[:page]).per(PAGINATES_PAR)
+    users = users.page(params[:page]).per(PAGINATES_PAR)
     render json: users, each_serializer: OtherUserSerializer,
                         meta: {
                           total_pages: users.total_pages,
@@ -56,8 +54,7 @@ class Api::UsersController < ApplicationController
     search_applicants_form = SearchApplicantsForm.new(search_params)
     applicants = search_applicants_form.search(params[:id]).order(name: :asc)
     # debugger
-    users = applicants.includes(:followings, :followers)
-                            .page(params[:page]).per(PAGINATES_PAR)
+    users = applicants.page(params[:page]).per(PAGINATES_PAR)
     render json: users, each_serializer: OtherUserSerializer,
                         meta: {
                           total_pages: users.total_pages,
@@ -71,8 +68,7 @@ class Api::UsersController < ApplicationController
     search_muting_users_form = SearchMutingUsersForm.new(search_params)
     muting_users = search_muting_users_form.search(params[:id]).order(name: :asc)
     # debugger
-    users = muting_users.includes(:followings, :followers)
-                            .page(params[:page]).per(PAGINATES_PAR)
+    users = muting_users.page(params[:page]).per(PAGINATES_PAR)
     render json: users, each_serializer: OtherUserSerializer,
                         meta: {
                           total_pages: users.total_pages,
@@ -86,8 +82,7 @@ class Api::UsersController < ApplicationController
     search_blocking_users_form = SearchBlockingUsersForm.new(search_params)
     blocking_users = search_blocking_users_form.search(params[:id]).order(name: :asc)
     # debugger
-    users = blocking_users.includes(:followings, :followers)
-                            .page(params[:page]).per(PAGINATES_PAR)
+    users = blocking_users.page(params[:page]).per(PAGINATES_PAR)
     render json: users, each_serializer: OtherUserSerializer,
                         meta: {
                           total_pages: users.total_pages,

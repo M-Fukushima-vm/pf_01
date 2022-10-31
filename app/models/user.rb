@@ -5,7 +5,7 @@ class User < ApplicationRecord
   validates :password_digest, presence: true, length: { minimum: 4 }, allow_nil: true # 空パスワードのアップデートを許容
   validates :avatar_name, length: {maximum: 3}
 
-  has_one_base64_attached :avatar # 1つの画像データ添付を設定する場合
+  has_one_base64_attached :avatar, strict_loading: true # 1つの画像データ添付を設定する場合
   # has_many_base64_attached :avatar # 複数の画像データ添付を設定する場合
 
   # 検索したい文字列が含まれているレコードを返す
