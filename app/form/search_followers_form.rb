@@ -1,4 +1,4 @@
-class SearchApplicantsForm
+class SearchFollowersForm
   include ActiveModel::Model
   include ActiveModel::Attributes
 

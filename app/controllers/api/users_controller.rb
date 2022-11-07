@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  before_action :authenticate, only: %i[index followings followers mates applicants muting_users blocking_users]
+  before_action :authenticate, only: %i[index followings followers mates muting_users blocking_users]
 
   PAGINATES_PAR = 8
 
@@ -32,9 +32,16 @@ class Api::UsersController < ApplicationController
   end
 
   def followers
-    user = User.with_attached_avatar.includes(:followers).find(params[:id])
-    users = user.followers
-    render json: users, each_serializer: FollowingSerializer
+    search_followers_form = SearchFollowersForm.new(search_params)
+    users = search_followers_form.search(params[:id]).order(name: :asc)
+    # debugger
+    users = users.page(params[:page]).per(PAGINATES_PAR)
+    render json: users, each_serializer: OtherUserSerializer,
+                        meta: {
+                          total_pages: users.total_pages,
+                          total_count: users.total_count,
+                          current_page: users.current_page
+                        }
   end
 
   def mates
@@ -48,20 +55,6 @@ class Api::UsersController < ApplicationController
                           total_count: users.total_count,
                           current_page: users.current_page
                         }
-  end
-
-  def applicants
-    search_applicants_form = SearchApplicantsForm.new(search_params)
-    applicants = search_applicants_form.search(params[:id]).order(name: :asc)
-    # debugger
-    users = applicants.page(params[:page]).per(PAGINATES_PAR)
-    render json: users, each_serializer: OtherUserSerializer,
-                        meta: {
-                          total_pages: users.total_pages,
-                          total_count: users.total_count,
-                          current_page: users.current_page
-                        }
-    # debugger
   end
 
   def muting_users

@@ -9,7 +9,7 @@
           color="grey lighten-1"
           class="mb-1"
         >mdi-cat</v-icon>
-        * 最近あなたをフォローしたユーザー がいる場合、表示します *
+        * あなたをフォロー中の未フォローユーザー がいる場合、表示します *
       </v-col>
     </v-row>
     <v-row
@@ -22,7 +22,7 @@
             color="grey lighten-1"
             class="mb-1"
           >mdi-cat</v-icon>
-          * 最近あなたをフォローしたユーザー を表示中 *
+          * あなたをフォロー中の未フォローユーザー を表示中 *
         </div>
       </v-col>
     </v-row>
@@ -546,8 +546,7 @@ export default {
       const paramsSerializer = (params) =>
         qs.stringify(params);
       const current_user = this.$store.getters['auth/reference_currentUser']
-      const res = await axios.get(`/api/users/${current_user.id}/applicants`,
-      { params, paramsSerializer });
+      const res = await axios.get(`/api/users/${this.current_user.id}/followers`, { params, paramsSerializer });
       this.users = res.data.users
       // console.log(res.data.users)
       this.pagingMeta = res.data.meta;

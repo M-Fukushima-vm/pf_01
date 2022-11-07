@@ -3,7 +3,7 @@
     <users-tool-bar></users-tool-bar>
     <v-row>
       <v-col>
-        <applicants-list></applicants-list>
+        <followers-list></followers-list>
       </v-col>
     </v-row>
   </div>
@@ -11,11 +11,11 @@
 
 <script>
   import usersToolBar from '@/components/toolBar/UsersToolBar'
-  import applicantsList from '@/components/lists/ApplicantsList'
+  import followersList from '@/components/lists/FollowersList'
   export default {
     components: {
       usersToolBar,
-      applicantsList,
+      followersList,
     },
     created() {
       // 読み込みの確認用
