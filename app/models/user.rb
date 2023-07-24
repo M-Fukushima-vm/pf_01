@@ -5,7 +5,7 @@ class User < ApplicationRecord
   validates :password_digest, presence: true, length: { minimum: 4 }, allow_nil: true # 空パスワードのアップデートを許容
   validates :avatar_name, length: {maximum: 3}
 
-  has_one_base64_attached :avatar, strict_loading: true # 1つの画像データ添付を設定する場合
+  has_one_base64_attached :avatar#, strict_loading: true # 1つの画像データ添付を設定する場合
   # has_many_base64_attached :avatar # 複数の画像データ添付を設定する場合
 
   # 検索したい文字列が含まれているレコードを返す
@@ -54,4 +54,17 @@ class User < ApplicationRecord
                                   dependent: :destroy
   has_many :blocking_left_users, through: :passive_block_users, source: :block_user	# 取得用
 
+  # (自分が) 見たフォロワー
+  has_many :active_looked_users, class_name: "SeenFollower", # 特定用
+                                  foreign_key: "looked_user_id",
+                                  dependent: :destroy
+  has_many :seen_followers, through: :active_looked_users, # 取得用
+                            source: :seen_follower
+
+  # チェイン元(自分含む 左)を 見てたユーザー
+  has_many :passive_seen_followers, class_name: "SeenFollower", # 特定用
+                                  foreign_key: "seen_follower_id",
+                                  dependent: :destroy
+  has_many :looked_left_users, through: :passive_seen_followers, # 取得用
+                                source: :looked_user
 end

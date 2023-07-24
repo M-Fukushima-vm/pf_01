@@ -5,13 +5,14 @@ Rails.application.routes.draw do
     # resources :users, only: %i[create index]
     resources :users do
       member do
-        get :followings, :followers, :mates, :muting_users, :blocking_users
+        get :followings, :followers, :mates, :muting_users, :blocking_users, :seen_followers
       end
     end
     resource :session, only: %i[create]
     resources :relationships, param: :followed_id, only: [:create, :destroy]
     resources :mute_users, param: :muted_id, only: [:create, :destroy]
     resources :block_users, param: :blocked_id, only: [:create, :destroy]
+    resources :seen_followers, param: :passive_user_id, only: :create
 
     namespace :me do
       resource :account, only: %i[update destroy]

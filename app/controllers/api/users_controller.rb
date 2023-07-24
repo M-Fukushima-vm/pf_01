@@ -85,6 +85,13 @@ class Api::UsersController < ApplicationController
     # debugger
   end
 
+  def seen_followers
+    user = User.includes(:seen_followers).find(params[:id])
+    users = user.seen_followers
+    render json: users, each_serializer: FollowingSerializer
+    # debugger
+  end
+
   private
 
   def user_params
