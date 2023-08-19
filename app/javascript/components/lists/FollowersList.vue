@@ -52,6 +52,11 @@
 								offset-y="25"
 								color="error"
 								dot
+								v-if="
+									uncheck_followers.length === 0 ||
+									uncheck_followers.some((follower) => follower.id === user.id)
+								"
+								v-model="badge_on"
 							>
 								<v-list-item-avatar>
 									<v-img v-if="user.avatar_url" :src="user.avatar_url"></v-img>
@@ -73,6 +78,32 @@
 									</v-avatar>
 								</v-list-item-avatar>
 							</v-badge>
+
+							<v-list-item-avatar
+								class="ml-4"
+								v-if="
+									uncheck_followers.length > 0 &&
+									!uncheck_followers.some((follower) => follower.id === user.id)
+								"
+							>
+								<v-img v-if="user.avatar_url" :src="user.avatar_url"></v-img>
+								<v-avatar
+									color="primary"
+									size="40"
+									v-if="!user.avatar_url && user.avatar_name"
+								>
+									<span class="white--text text-sm">{{
+										user.avatar_name
+									}}</span>
+								</v-avatar>
+								<v-avatar
+									color="primary lighten-1"
+									size="40"
+									v-if="!user.avatar_url && !user.avatar_name"
+								>
+									<v-icon class="white--text text-sm">mdi-account</v-icon>
+								</v-avatar>
+							</v-list-item-avatar>
 
 							<v-list-item-content>
 								<v-list-item-title
@@ -172,7 +203,7 @@
 								<v-list-item-subtitle
 									class="text-center text-caption grey--text mt-n3"
 									v-if="
-										this.current_user_followings.some(
+										this.followings.some(
 											(following) => following.id === this.tmp.id
 										)
 									"
@@ -193,12 +224,10 @@
 						<v-list-item-subtitle
 							class="text-center text-caption grey--text mt-n3"
 							v-if="
-								this.current_user_blockings.some(
+								this.blockings.some(
 									(blocking_user) => blocking_user.id === this.tmp.id
 								) ||
-								this.current_user_mutings.some(
-									(mute_user) => mute_user.id === this.tmp.id
-								)
+								this.mutings.some((mute_user) => mute_user.id === this.tmp.id)
 							"
 						>
 							* 次回以降、非表示 にします *
@@ -213,7 +242,7 @@
 								<v-col
 									class="justify-center pl-9 mr-n9"
 									v-if="
-										!this.current_user_followings.some(
+										!this.followings.some(
 											(following) => following.id === this.tmp.id
 										)
 									"
@@ -233,7 +262,7 @@
 								<v-col
 									class="justify-center pl-9 mr-n9"
 									v-if="
-										this.current_user_followings.some(
+										this.followings.some(
 											(following) => following.id === this.tmp.id
 										)
 									"
@@ -253,7 +282,7 @@
 								<v-col
 									class="justify-center pl-9 mr-n9"
 									v-if="
-										!this.current_user_mutings.some(
+										!this.mutings.some(
 											(muting_user) => muting_user.id === this.tmp.id
 										)
 									"
@@ -273,7 +302,7 @@
 								<v-col
 									class="justify-center pl-9 mr-n9"
 									v-if="
-										this.current_user_mutings.some(
+										this.mutings.some(
 											(muting_user) => muting_user.id === this.tmp.id
 										)
 									"
@@ -293,7 +322,7 @@
 								<v-col
 									class="justify-center pl-7 mr-n7"
 									v-if="
-										!this.current_user_blockings.some(
+										!this.blockings.some(
 											(blocking_user) => blocking_user.id === this.tmp.id
 										)
 									"
@@ -313,7 +342,7 @@
 								<v-col
 									class="justify-center pl-7 mr-n7"
 									v-if="
-										this.current_user_blockings.some(
+										this.blockings.some(
 											(blocking_user) => blocking_user.id === this.tmp.id
 										)
 									"
@@ -338,7 +367,7 @@
 							class="text-center text-caption grey--text mt-1 mb-2"
 							v-if="
 								this.both_users.length > 0 &&
-								!this.current_user_followings.some(
+								!this.followings.some(
 									(following) => following.id === this.tmp.id
 								)
 							"
@@ -349,7 +378,7 @@
 						<v-list-item-group
 							v-if="
 								this.both_users.length > 0 &&
-								!this.current_user_followings.some(
+								!this.followings.some(
 									(following) => following.id === this.tmp.id
 								)
 							"
@@ -401,6 +430,15 @@ import axios from "axios";
 import qs from "qs";
 
 export default {
+	props: {
+		current_user: {},
+		followings: {},
+		mutings: {},
+		blockings: {},
+		seen_followers: {},
+		followers: {},
+		uncheck_followers: {},
+	},
 	data() {
 		return {
 			users: [],
@@ -414,27 +452,13 @@ export default {
 			tmp_followers: [],
 			tmp_followings_count: null,
 			tmp_followers_count: null,
-			current_user: "",
-			current_user_followings: [],
 			both_users: [],
-			current_user_mutings: [],
-			current_user_blockings: [],
-			current_user_seen_followers: [],
-			checked_followers: [],
+			badge_on: false,
 		};
 	},
-	async created() {
-		await this.getCurrentUser();
+	created() {
+		// this.checkNewFollowers();
 		this.fetchUsers();
-		this.getCurrentUserFollowings();
-		this.getCurrentUserMutings();
-		this.getCurrentUserBlockings();
-		this.getCurrentUserSeenFollowers();
-	},
-	computed: {
-		checkFollowers() {
-			this.checkFollower();
-		},
 	},
 	methods: {
 		searchFocus() {
@@ -451,9 +475,8 @@ export default {
 			// プレビューユーザーのフォロワー から current_userのフォローしているユーザー とマッチするもの
 			const both_users = this.tmp_followers.filter(
 				(x) =>
-					this.current_user_followings.filter(
-						(y) => y.id === x.id && y.name === x.name
-					).length > 0
+					this.followings.filter((y) => y.id === x.id && y.name === x.name)
+						.length > 0
 			);
 			// 抽出した共通ユーザーからランダム抽出
 			const copy = [...both_users]; // コピーの配列
@@ -489,12 +512,12 @@ export default {
 			await axios.post(`/api/relationships`, params);
 
 			// 表示データ(data) の配列操作
-			// current_user_followingsの配列 に追加
+			// followingsの配列 に追加
 			const addFollowing = {
 				id: this.tmp.id,
 				name: this.tmp.name,
 			};
-			this.current_user_followings.push(addFollowing);
+			this.followings.push(addFollowing);
 
 			// プレビューのフォロワー数に current_user 分を追加(+1)
 			this.tmp_followers.push(this.current_user);
@@ -510,8 +533,8 @@ export default {
 				user.followers.push(addFollowing);
 			}
 
-			// current_user_blockingsの配列内の プレビューと一致するid を抽出
-			const index_cu_blockings = this.current_user_blockings.findIndex(
+			// blockingsの配列内の プレビューと一致するid を抽出
+			const index_cu_blockings = this.blockings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			// 一致があったら unblockUser() を実行
@@ -520,18 +543,19 @@ export default {
 			}
 			this.onFocus = false;
 			this.fetchUsers();
+			this.checkAgain();
 		},
 		async unfollowUser() {
 			// delete リクエストの送信
 			await axios.delete(`/api/relationships/${this.tmp.id}`);
 
 			// 表示データ(data) の配列操作
-			// current_user_followingsの配列内 から プレビューのユーザーを削除
-			const index_cu_following = this.current_user_followings.findIndex(
+			// followingsの配列内 から プレビューのユーザーを削除
+			const index_cu_following = this.followings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			if (index_cu_following !== -1) {
-				this.current_user_followings.splice(index_cu_following, 1);
+				this.followings.splice(index_cu_following, 1);
 			}
 
 			// プレビューのフォロワーから current_user を削除
@@ -552,25 +576,10 @@ export default {
 			if (index_u_followers !== -1) {
 				user.followers.splice(index_u_followers, 1);
 			}
-		},
-		getCurrentUser() {
-			const current_user_data =
-				this.$store.getters["auth/reference_currentUser"];
-			// console.log(JSON.stringify(current_user_data, null, 2))
-			const new_current_user = {
-				id: current_user_data.id,
-				name: current_user_data.name,
-			};
-			this.current_user = new_current_user;
-			// console.log(JSON.stringify(this.current_user, null, 2))
-		},
-		async getCurrentUserFollowings() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(`/api/users/${current_user.id}/followings`);
-			this.current_user_followings = res.data.users;
-			// console.log(this.current_user_followings)
+			this.checkAgain();
 		},
 		async fetchUsers() {
+			this.users = this.followers;
 			const searchParams = {
 				q: {
 					name: this.query.userName,
@@ -588,7 +597,9 @@ export default {
 			// console.log(res.data.users)
 			this.pagingMeta = res.data.meta;
 			this.currentPage = 1;
-			this.$nextTick(() => this.searchFocus());
+			await this.$nextTick(() => this.searchFocus());
+			// this.$nextTick(() => this.badgeOn());
+			this.badgeOn();
 		},
 		async muteUser() {
 			// post リクエストの送信
@@ -601,31 +612,27 @@ export default {
 			await axios.post(`/api/mute_users`, params);
 
 			// 表示データ(data) の配列操作
-			// current_user_followingsの配列 に追加
+			// followingsの配列 に追加
 			const addMuting = {
 				id: this.tmp.id,
 				name: this.tmp.name,
 			};
-			this.current_user_mutings.push(addMuting);
-		},
-		async getCurrentUserMutings() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(`/api/users/${current_user.id}/muting_users`);
-			this.current_user_mutings = res.data.users;
-			// console.log(this.current_user_mutings)
+			this.mutings.push(addMuting);
+			this.checkAgain();
 		},
 		async unmuteUser() {
 			// delete リクエストの送信
 			await axios.delete(`/api/mute_users/${this.tmp.id}`);
 
 			// 表示データ(data) の配列操作
-			// current_user_mutingsの配列内 から プレビューのユーザーを削除
-			const index_cu_mutings = this.current_user_mutings.findIndex(
+			// mutingsの配列内 から プレビューのユーザーを削除
+			const index_cu_mutings = this.mutings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			if (index_cu_mutings !== -1) {
-				this.current_user_mutings.splice(index_cu_mutings, 1);
+				this.mutings.splice(index_cu_mutings, 1);
 			}
+			this.checkAgain();
 		},
 		async blockUser() {
 			// post リクエストの送信
@@ -638,15 +645,15 @@ export default {
 			await axios.post(`/api/block_users`, params);
 
 			// 表示データ(data) の配列操作
-			// current_user_blockingsの配列 に追加
+			// blockingsの配列 に追加
 			const addBlocking = {
 				id: this.tmp.id,
 				name: this.tmp.name,
 			};
-			this.current_user_blockings.push(addBlocking);
+			this.blockings.push(addBlocking);
 
-			// current_user_followingsの配列内の プレビューと一致するid を抽出
-			const index_cu_following = this.current_user_followings.findIndex(
+			// followingsの配列内の プレビューと一致するid を抽出
+			const index_cu_following = this.followings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			// 一致があったら unfollowUser() を実行
@@ -654,35 +661,29 @@ export default {
 				this.$nextTick(() => this.unfollowUser());
 			}
 
-			// current_user_mutingsの配列内の プレビューと一致するid を抽出
-			const index_cu_mutings = this.current_user_mutings.findIndex(
+			// mutingsの配列内の プレビューと一致するid を抽出
+			const index_cu_mutings = this.mutings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			// 一致があったら unmuteUser() を実行
 			if (index_cu_mutings !== -1) {
 				this.$nextTick(() => this.unmuteUser());
 			}
-		},
-		async getCurrentUserBlockings() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(
-				`/api/users/${current_user.id}/blocking_users`
-			);
-			this.current_user_blockings = res.data.users;
-			// console.log(this.current_user_blockings)
+			this.checkAgain();
 		},
 		async unblockUser() {
 			// delete リクエストの送信
 			await axios.delete(`/api/block_users/${this.tmp.id}`);
 
 			// 表示データ(data) の配列操作
-			// current_user_blockingsの配列内 から プレビューのユーザーを削除
-			const index_cu_blockings = this.current_user_blockings.findIndex(
+			// blockingsの配列内 から プレビューのユーザーを削除
+			const index_cu_blockings = this.blockings.findIndex(
 				({ id }) => id === this.tmp.id
 			);
 			if (index_cu_blockings !== -1) {
-				this.current_user_blockings.splice(index_cu_blockings, 1);
+				this.splice(index_cu_blockings, 1);
 			}
+			this.checkAgain();
 		},
 		async seenFollower(user) {
 			// post リクエストの送信
@@ -692,44 +693,29 @@ export default {
 				},
 			};
 			const params = { ...targetUser };
-			// await axios.post(`/api/seen_followers`, params );
-
 			// 表示データ(data) の配列操作
 			const addSeenFollower = {
 				id: user.id,
 			};
 			const seen_array = [addSeenFollower];
-			// data() に current_user_seen_followers: [] を 新設するとして
+			// data() に seen_followers: [] を 新設するとして
 			// ↑ の seen_arrayのid に一致するid を result へ格納
-			const result = this.current_user_seen_followers.filter(
+			const result = this.seen_followers.filter(
 				(x) => seen_array.filter((y) => y.id === x.id).length > 0
 			);
 			// result の中身( 既にチェック済のフォロワー )がなければ追加
 			if (result.length === 0) {
 				axios.post(`/api/seen_followers`, params);
-				this.current_user_seen_followers.push(addSeenFollower);
+				this.seen_followers.push(addSeenFollower);
 			} else {
 			}
 		},
-		async getCurrentUserSeenFollowers() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(
-				`/api/users/${current_user.id}/seen_followers`
-			);
-			this.current_user_seen_followers = res.data.users;
-			// console.log(this.current_user_seen_followers)
+		badgeOn() {
+			this.badge_on = true;
 		},
-		checkFollower() {
-			// const uncheck_followers = this.users - this.current_user_seen_followers
-			// this.uncheck_followers = uncheck_followers
-			const result_1 = this.users.filter(
-				(x) =>
-					this.current_user_seen_followers.filter(
-						(y) => y.id === x.id && y.name === x.name
-					).length > 0
-			);
-			// console.log(result_1);
-			this.checked_followers = result_1;
+		checkAgain() {
+			const item = this.tmp;
+			this.$emit("checkAgain", item);
 		},
 	},
 };

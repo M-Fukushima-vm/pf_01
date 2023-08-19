@@ -59,14 +59,15 @@ end
 tester = User.first
 guest = User.find(2)
 samples = User.where(id: [3..4]).order(id: :asc)
-dammies = User.where(id: [5..34]).order(id: :asc)
+dammies1 = User.where(id: [5..31]).order(id: :asc)
+dammies2 = User.where(id: [5..34]).order(id: :asc)
   # テストユーザー関係
     # テストユーザーがフォロー
       samples.each { |sample| tester.active_relationships.create(followed_id: sample.id) }
-      dammies.each { |dammy| tester.active_relationships.create(followed_id: dammy.id) }
+      dammies1.each { |dammy| tester.active_relationships.create(followed_id: dammy.id) }
     # テストユーザーをフォロー
       samples.each { |sample| sample.active_relationships.create(followed_id: tester.id) }
-      dammies.each { |dammy| dammy.active_relationships.create(followed_id: tester.id) }
+      dammies2.each { |dammy| dammy.active_relationships.create(followed_id: tester.id) }
 
   # ゲストユーザー関係
     # ゲストユーザーがフォロー
@@ -75,7 +76,7 @@ dammies = User.where(id: [5..34]).order(id: :asc)
       samples.each { |sample| sample.active_relationships.create(followed_id: guest.id) }
 
   # 相互フォロー
-      dammies.to_a.permutation(2) do |user1, user2|
+      dammies2.to_a.permutation(2) do |user1, user2|
         user1.active_relationships.create(followed_id: user2.id)
       end
 
