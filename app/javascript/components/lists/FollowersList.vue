@@ -681,7 +681,7 @@ export default {
 				({ id }) => id === this.tmp.id
 			);
 			if (index_cu_blockings !== -1) {
-				this.splice(index_cu_blockings, 1);
+				this.blockings.splice(index_cu_blockings, 1);
 			}
 			this.checkAgain();
 		},

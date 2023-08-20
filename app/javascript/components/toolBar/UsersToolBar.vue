@@ -5,7 +5,9 @@
 			<v-list-item-icon>
 				<v-btn link to="/mates" icon class="mx-4 mt-1">
 					<div>
-						<v-icon class="ml-2">mdi-account-switch-outline</v-icon>
+						<v-icon class="ml-2" color="grey darken-1">
+							mdi-account-switch-outline
+						</v-icon>
 						<v-list-item-title class="text-caption">Mates</v-list-item-title>
 					</div>
 				</v-btn>
@@ -29,31 +31,37 @@
 							:content="uncheck_followers.length"
 							:value="uncheck_followers.length"
 						>
-							<v-icon class="ml-6">mdi-account-music-outline</v-icon>
+							<v-icon class="ml-6" color="grey darken-1">
+								mdi-account-music
+							</v-icon>
 						</v-badge>
-						<v-list-item-title class="text-caption"
-							>Followers</v-list-item-title
-						>
+						<v-list-item-title class="text-caption">
+							Followers
+						</v-list-item-title>
 					</div>
 				</v-btn>
 
 				<v-btn link to="/users" icon class="mx-4 mt-1">
 					<div>
-						<v-icon class="ml-3">mdi-account-search-outline</v-icon>
+						<v-icon class="ml-3" color="grey darken-1">
+							mdi-account-search
+						</v-icon>
 						<v-list-item-title class="text-caption">Search</v-list-item-title>
 					</div>
 				</v-btn>
 
 				<v-btn link to="/mute_users" icon class="mx-3 mt-1">
 					<div>
-						<v-icon class="ml-1">mdi-account-minus-outline</v-icon>
+						<v-icon class="ml-1">mdi-account-minus</v-icon>
 						<v-list-item-title class="text-caption">Mute</v-list-item-title>
 					</div>
 				</v-btn>
 
 				<v-btn link to="/block_users" icon class="mx-4 mt-1">
 					<div>
-						<v-icon class="ml-2">mdi-account-cancel-outline</v-icon>
+						<v-icon class="ml-2" color="grey darken-1">
+							mdi-account-cancel
+						</v-icon>
 						<v-list-item-title class="text-caption">Block</v-list-item-title>
 					</div>
 				</v-btn>
