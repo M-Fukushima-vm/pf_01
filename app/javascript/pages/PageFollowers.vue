@@ -123,6 +123,13 @@ export default {
 				this.current_user_seen_followers.push(addSeenFollower);
 			} else {
 			}
+			// uncheck_followersの配列内 から addSeenFollowerのユーザーを削除
+			const ignore_uncheck_follower = this.uncheck_followers.findIndex(
+				({ id }) => id === addSeenFollower.id
+			);
+			if (ignore_uncheck_follower !== -1) {
+				this.uncheck_followers.splice(ignore_uncheck_follower, 1);
+			}
 		},
 		unCheckFollowers() {
 			// フォロワーから見たことあるフォロワーリストを除外

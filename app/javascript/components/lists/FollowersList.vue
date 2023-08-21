@@ -53,7 +53,7 @@
 								color="error"
 								dot
 								v-if="
-									uncheck_followers.length === 0 ||
+									(followers.length === 0 && uncheck_followers.length === 0) ||
 									uncheck_followers.some((follower) => follower.id === user.id)
 								"
 								v-model="badge_on"
@@ -82,7 +82,7 @@
 							<v-list-item-avatar
 								class="ml-4"
 								v-if="
-									uncheck_followers.length > 0 &&
+									followers.length > 0 &&
 									!uncheck_followers.some((follower) => follower.id === user.id)
 								"
 							>
@@ -709,6 +709,7 @@ export default {
 				this.seen_followers.push(addSeenFollower);
 			} else {
 			}
+			this.checkAgain();
 		},
 		badgeOn() {
 			this.badge_on = true;

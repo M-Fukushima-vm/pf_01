@@ -59,7 +59,7 @@ end
 tester = User.first
 guest = User.find(2)
 samples = User.where(id: [3..4]).order(id: :asc)
-dammies1 = User.where(id: [5..31]).order(id: :asc)
+dammies1 = User.where(id: [5..28]).order(id: :asc)
 dammies2 = User.where(id: [5..34]).order(id: :asc)
   # テストユーザー関係
     # テストユーザーがフォロー
