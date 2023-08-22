@@ -12,13 +12,7 @@
 					</div>
 				</v-btn>
 
-				<v-btn
-					link
-					to="/followers"
-					icon
-					class="mx-4 mt-1"
-					v-show="followers.length > 0 || uncheck_followers.length > 0"
-				>
+				<v-btn link to="/followers" icon class="mx-4 mt-1">
 					<div>
 						<v-badge
 							bordered
