@@ -22,8 +22,8 @@ class SearchUsersForm
           blocking_left_user_ids = User.includes(:blocking_left_users).where(id: id.to_i)
                                         .map {|item| item.blocking_left_users.ids }.flatten
     # debugger
-    # 差し引きで 除外したい集合 を定義する
-        # 除外したい集合： selected_ids
+    # 差し引きで 抽出したい集合 を定義する
+        # 抽出したい集合 selected_ids
           selected_ids = User.ids - muting_user_ids - muting_left_user_ids - blocking_user_ids - blocking_left_user_ids
     
     # 抽出したい集合だけの Activemodel::Relationオブジェクトにする

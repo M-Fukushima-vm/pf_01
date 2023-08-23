@@ -6,14 +6,14 @@
 		>
 			<v-col>
 				<v-icon color="grey lighten-1" class="mb-1">mdi-cat</v-icon>
-				* ユーザー一覧を取得・表示します *
+				* あなたをフォロー中の 未フォローユーザー がいる場合、表示します *
 			</v-col>
 		</v-row>
 		<v-row v-if="this.users.length" class="text-center text-caption grey--text">
 			<v-col>
 				<div>
 					<v-icon color="grey lighten-1" class="mb-1">mdi-cat</v-icon>
-					* ユーザー一覧を表示中 *
+					* あなたをフォロー中の 未フォローユーザー を表示中 *
 				</div>
 			</v-col>
 		</v-row>
@@ -39,7 +39,11 @@
 					width="300"
 				>
 					<template v-for="user in users">
-						<v-list-item :key="user.id" link @focus="focus(user)">
+						<v-list-item
+							:key="user.id"
+							link
+							@focus="focus(user), seenFollower(user)"
+						>
 							<v-badge
 								bordered
 								overlap
@@ -49,8 +53,8 @@
 								color="error"
 								dot
 								v-if="
-									!followings.some((following) => following.id === user.id) &&
-									!seen_followers.some((follower) => follower.id === user.id)
+									(followers.length === 0 && uncheck_followers.length === 0) ||
+									uncheck_followers.some((follower) => follower.id === user.id)
 								"
 								v-model="badge_on"
 							>
@@ -78,8 +82,8 @@
 							<v-list-item-avatar
 								class="ml-4"
 								v-if="
-									followings.some((following) => following.id === user.id) ||
-									seen_followers.some((follower) => follower.id === user.id)
+									followers.length > 0 &&
+									!uncheck_followers.some((follower) => follower.id === user.id)
 								"
 							>
 								<v-img v-if="user.avatar_url" :src="user.avatar_url"></v-img>
@@ -217,17 +221,22 @@
 							</v-list-item-content>
 						</v-list-item>
 
-						<!-- <v-list-item-subtitle
-              class="text-center text-caption grey--text mt-n3"
-              v-if="this.blockings.some( blocking_user => blocking_user.id === this.tmp.id ) || this.mutings.some( mute_user => mute_user.id === this.tmp.id )"
-            >
-              * 次回以降、非表示 にします *
-            </v-list-item-subtitle> -->
+						<v-list-item-subtitle
+							class="text-center text-caption grey--text mt-n3"
+							v-if="
+								this.blockings.some(
+									(blocking_user) => blocking_user.id === this.tmp.id
+								) ||
+								this.mutings.some((mute_user) => mute_user.id === this.tmp.id)
+							"
+						>
+							* 次回以降、非表示 にします *
+						</v-list-item-subtitle>
 
 						<v-divider />
 
 						<v-list-item-group>
-							<v-row>
+							<v-row class="ml-n9">
 								<v-spacer />
 
 								<v-col
@@ -243,7 +252,7 @@
 											<div>
 												<v-icon>mdi-heart-plus-outline</v-icon>
 												<v-list-item-title class="text-caption"
-													>follow</v-list-item-title
+													>Re: follow</v-list-item-title
 												>
 											</div>
 										</v-btn>
@@ -270,77 +279,85 @@
 									</v-list-item-icon>
 								</v-col>
 
-								<!-- <v-col
-                  class="justify-center pl-9 mr-n9"
-                  v-if="!this.mutings.some( muting_user => muting_user.id === this.tmp.id )"
-                >
-                  <v-list-item-icon>
-                    <v-btn
-                      icon
-                      color="primary darken-1"
-                      @click="muteUser"
-                    >
-                      <div>
-                        <v-icon>mdi-volume-off</v-icon>
-                        <v-list-item-title class="text-caption">Mute</v-list-item-title>
-                      </div>
-                    </v-btn>
-                  </v-list-item-icon>
-                </v-col>
+								<v-col
+									class="justify-center pl-9 mr-n9"
+									v-if="
+										!this.mutings.some(
+											(muting_user) => muting_user.id === this.tmp.id
+										)
+									"
+								>
+									<v-list-item-icon>
+										<v-btn icon color="primary darken-1" @click="muteUser">
+											<div>
+												<v-icon>mdi-volume-off</v-icon>
+												<v-list-item-title class="text-caption"
+													>Mute</v-list-item-title
+												>
+											</div>
+										</v-btn>
+									</v-list-item-icon>
+								</v-col>
 
-                <v-col
-                  class="justify-center pl-9 mr-n9"
-                  v-if="this.mutings.some( muting_user => muting_user.id === this.tmp.id )"
-                >
-                  <v-list-item-icon>
-                    <v-btn
-                      icon
-                      color="primary darken-1"
-                      @click="unmuteUser" 
-                    >
-                      <div>
-                        <v-icon>mdi-volume-low</v-icon>
-                        <v-list-item-title class="text-caption">Unmute</v-list-item-title>
-                      </div>
-                    </v-btn>
-                  </v-list-item-icon>
-                </v-col>
+								<v-col
+									class="justify-center pl-9 mr-n9"
+									v-if="
+										this.mutings.some(
+											(muting_user) => muting_user.id === this.tmp.id
+										)
+									"
+								>
+									<v-list-item-icon>
+										<v-btn icon color="primary darken-1" @click="unmuteUser">
+											<div>
+												<v-icon>mdi-volume-low</v-icon>
+												<v-list-item-title class="text-caption"
+													>Unmute</v-list-item-title
+												>
+											</div>
+										</v-btn>
+									</v-list-item-icon>
+								</v-col>
 
-                <v-col
-                  class="justify-center pl-7 mr-n7"
-                  v-if="!this.blockings.some( blocking_user => blocking_user.id === this.tmp.id )"
-                >
-                  <v-list-item-icon>
-                    <v-btn
-                      icon
-                      color="accent"
-                      @click="blockUser"
-                    >
-                      <div>
-                        <v-icon>mdi-cancel</v-icon>
-                        <v-list-item-title class="text-caption">Block</v-list-item-title>
-                      </div>
-                    </v-btn>
-                  </v-list-item-icon>
-                </v-col>
-                
-                <v-col
-                  class="justify-center pl-7 mr-n7"
-                  v-if="this.blockings.some( blocking_user => blocking_user.id === this.tmp.id )"
-                >
-                  <v-list-item-icon>
-                    <v-btn
-                      icon
-                      color="primary darken-1"
-                      @click="unblockUser"
-                    >
-                      <div>
-                        <v-icon>mdi-stop-circle-outline</v-icon>
-                        <v-list-item-title class="text-caption">Unblock</v-list-item-title>
-                      </div>
-                    </v-btn>
-                  </v-list-item-icon>
-                </v-col> -->
+								<v-col
+									class="justify-center pl-7 mr-n7"
+									v-if="
+										!this.blockings.some(
+											(blocking_user) => blocking_user.id === this.tmp.id
+										)
+									"
+								>
+									<v-list-item-icon>
+										<v-btn icon color="accent" @click="blockUser">
+											<div>
+												<v-icon>mdi-cancel</v-icon>
+												<v-list-item-title class="text-caption"
+													>Block</v-list-item-title
+												>
+											</div>
+										</v-btn>
+									</v-list-item-icon>
+								</v-col>
+
+								<v-col
+									class="justify-center pl-7 mr-n7"
+									v-if="
+										this.blockings.some(
+											(blocking_user) => blocking_user.id === this.tmp.id
+										)
+									"
+								>
+									<v-list-item-icon>
+										<v-btn icon color="primary darken-1" @click="unblockUser">
+											<div>
+												<v-icon>mdi-stop-circle-outline</v-icon>
+												<v-list-item-title class="text-caption"
+													>Unblock</v-list-item-title
+												>
+											</div>
+										</v-btn>
+									</v-list-item-icon>
+								</v-col>
 
 								<v-spacer />
 							</v-row>
@@ -416,7 +433,11 @@ export default {
 	props: {
 		current_user: {},
 		followings: {},
+		mutings: {},
+		blockings: {},
 		seen_followers: {},
+		followers: {},
+		uncheck_followers: {},
 	},
 	data() {
 		return {
@@ -436,6 +457,7 @@ export default {
 		};
 	},
 	created() {
+		// this.checkNewFollowers();
 		this.fetchUsers();
 	},
 	methods: {
@@ -519,6 +541,9 @@ export default {
 			if (index_cu_blockings !== -1) {
 				this.$nextTick(() => this.unblockUser());
 			}
+			this.onFocus = false;
+			this.fetchUsers();
+			this.checkAgain();
 		},
 		async unfollowUser() {
 			// delete リクエストの送信
@@ -551,8 +576,10 @@ export default {
 			if (index_u_followers !== -1) {
 				user.followers.splice(index_u_followers, 1);
 			}
+			this.checkAgain();
 		},
 		async fetchUsers() {
+			this.users = this.followers;
 			const searchParams = {
 				q: {
 					name: this.query.userName,
@@ -562,16 +589,134 @@ export default {
 			const params = { ...searchParams, ...pagingParams };
 			const paramsSerializer = (params) => qs.stringify(params);
 			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(`/api/users`, { params, paramsSerializer });
+			const res = await axios.get(
+				`/api/users/${this.current_user.id}/followers`,
+				{ params, paramsSerializer }
+			);
 			this.users = res.data.users;
 			// console.log(res.data.users)
 			this.pagingMeta = res.data.meta;
 			this.currentPage = 1;
-			this.$nextTick(() => this.searchFocus());
+			await this.$nextTick(() => this.searchFocus());
+			// this.$nextTick(() => this.badgeOn());
 			this.badgeOn();
+		},
+		async muteUser() {
+			// post リクエストの送信
+			const targetUser = {
+				target: {
+					id: this.tmp.id,
+				},
+			};
+			const params = { ...targetUser };
+			await axios.post(`/api/mute_users`, params);
+
+			// 表示データ(data) の配列操作
+			// followingsの配列 に追加
+			const addMuting = {
+				id: this.tmp.id,
+				name: this.tmp.name,
+			};
+			this.mutings.push(addMuting);
+			this.checkAgain();
+		},
+		async unmuteUser() {
+			// delete リクエストの送信
+			await axios.delete(`/api/mute_users/${this.tmp.id}`);
+
+			// 表示データ(data) の配列操作
+			// mutingsの配列内 から プレビューのユーザーを削除
+			const index_cu_mutings = this.mutings.findIndex(
+				({ id }) => id === this.tmp.id
+			);
+			if (index_cu_mutings !== -1) {
+				this.mutings.splice(index_cu_mutings, 1);
+			}
+			this.checkAgain();
+		},
+		async blockUser() {
+			// post リクエストの送信
+			const targetUser = {
+				target: {
+					id: this.tmp.id,
+				},
+			};
+			const params = { ...targetUser };
+			await axios.post(`/api/block_users`, params);
+
+			// 表示データ(data) の配列操作
+			// blockingsの配列 に追加
+			const addBlocking = {
+				id: this.tmp.id,
+				name: this.tmp.name,
+			};
+			this.blockings.push(addBlocking);
+
+			// followingsの配列内の プレビューと一致するid を抽出
+			const index_cu_following = this.followings.findIndex(
+				({ id }) => id === this.tmp.id
+			);
+			// 一致があったら unfollowUser() を実行
+			if (index_cu_following !== -1) {
+				this.$nextTick(() => this.unfollowUser());
+			}
+
+			// mutingsの配列内の プレビューと一致するid を抽出
+			const index_cu_mutings = this.mutings.findIndex(
+				({ id }) => id === this.tmp.id
+			);
+			// 一致があったら unmuteUser() を実行
+			if (index_cu_mutings !== -1) {
+				this.$nextTick(() => this.unmuteUser());
+			}
+			this.checkAgain();
+		},
+		async unblockUser() {
+			// delete リクエストの送信
+			await axios.delete(`/api/block_users/${this.tmp.id}`);
+
+			// 表示データ(data) の配列操作
+			// blockingsの配列内 から プレビューのユーザーを削除
+			const index_cu_blockings = this.blockings.findIndex(
+				({ id }) => id === this.tmp.id
+			);
+			if (index_cu_blockings !== -1) {
+				this.blockings.splice(index_cu_blockings, 1);
+			}
+			this.checkAgain();
+		},
+		async seenFollower(user) {
+			// post リクエストの送信
+			const targetUser = {
+				target: {
+					id: user.id,
+				},
+			};
+			const params = { ...targetUser };
+			// 表示データ(data) の配列操作
+			const addSeenFollower = {
+				id: user.id,
+			};
+			const seen_array = [addSeenFollower];
+			// data() に seen_followers: [] を 新設するとして
+			// ↑ の seen_arrayのid に一致するid を result へ格納
+			const result = this.seen_followers.filter(
+				(x) => seen_array.filter((y) => y.id === x.id).length > 0
+			);
+			// result の中身( 既にチェック済のフォロワー )がなければ追加
+			if (result.length === 0) {
+				axios.post(`/api/seen_followers`, params);
+				this.seen_followers.push(addSeenFollower);
+			} else {
+			}
+			this.checkAgain();
 		},
 		badgeOn() {
 			this.badge_on = true;
+		},
+		checkAgain() {
+			const item = this.tmp;
+			this.$emit("checkAgain", item);
 		},
 	},
 };

@@ -6,11 +6,15 @@
 		/>
 		<v-row>
 			<v-col>
-				<block-users-list
+				<followers-list
 					:current_user="current_user"
 					:followings="current_user_followings"
 					:mutings="current_user_mutings"
 					:blockings="current_user_blockings"
+					:seen_followers="current_user_seen_followers"
+					:followers="current_user_followers"
+					:uncheck_followers="uncheck_followers"
+					@checkAgain="checkAgain"
 				/>
 			</v-col>
 		</v-row>
@@ -20,22 +24,22 @@
 <script>
 import axios from "axios";
 import usersToolBar from "@/components/toolBar/UsersToolBar";
-import blockUsersList from "@/components/lists/BlockUsersList.vue";
+import followersList from "@/components/lists/FollowersList";
 
 export default {
 	components: {
 		usersToolBar,
-		blockUsersList,
+		followersList,
 	},
 	data() {
 		return {
 			current_user: "",
 			current_user_followings: [],
+			current_user_mutings: [],
+			current_user_blockings: [],
 			current_user_seen_followers: [],
 			current_user_followers: [],
 			uncheck_followers: [],
-			current_user_mutings: [],
-			current_user_blockings: [],
 		};
 	},
 	async created() {
@@ -43,11 +47,17 @@ export default {
 		// console.log(this.$children)
 		this.getCurrentUser();
 		this.getCurrentUserFollowings();
+		this.getCurrentUserMutings();
+		this.getCurrentUserBlockings();
 		this.getCurrentUserSeenFollowers();
 		await this.getCurrentUserFollowers();
 		this.unCheckFollowers();
-		this.getCurrentUserMutings();
-		this.getCurrentUserBlockings();
+	},
+	computed: {
+		async checkFollowers() {
+			await this.getCurrentUserFollowers();
+			this.unCheckFollowers();
+		},
 	},
 	methods: {
 		getCurrentUser() {
@@ -67,6 +77,20 @@ export default {
 			this.current_user_followings = res.data.users;
 			// console.log(this.current_user_followings)
 		},
+		async getCurrentUserMutings() {
+			const current_user = this.$store.getters["auth/reference_currentUser"];
+			const res = await axios.get(`/api/users/${current_user.id}/muting_users`);
+			this.current_user_mutings = res.data.users;
+			// console.log(this.current_user_mutings)
+		},
+		async getCurrentUserBlockings() {
+			const current_user = this.$store.getters["auth/reference_currentUser"];
+			const res = await axios.get(
+				`/api/users/${current_user.id}/blocking_users`
+			);
+			this.current_user_blockings = res.data.users;
+			// console.log(this.current_user_blockings)
+		},
 		async getCurrentUserSeenFollowers() {
 			const current_user = this.$store.getters["auth/reference_currentUser"];
 			const res = await axios.get(
@@ -84,6 +108,29 @@ export default {
 			// console.log(this.current_user_followers)
 			// console.log(JSON.stringify(this.current_user_followers, null, 2));
 		},
+		checkAgain(item) {
+			// 表示データ(data) の配列操作
+			const addSeenFollower = {
+				id: item.id,
+			};
+			const checked_array = [addSeenFollower];
+			// ↑ の checked_arrayのid に一致するid を result へ格納
+			const result = this.current_user_seen_followers.filter(
+				(x) => checked_array.filter((y) => y.id === x.id).length > 0
+			);
+			// result の中身( 既にチェック済のフォロワー )がなければ追加
+			if (result.length === 0) {
+				this.current_user_seen_followers.push(addSeenFollower);
+			} else {
+			}
+			// uncheck_followersの配列内 から addSeenFollowerのユーザーを削除
+			const ignore_uncheck_follower = this.uncheck_followers.findIndex(
+				({ id }) => id === addSeenFollower.id
+			);
+			if (ignore_uncheck_follower !== -1) {
+				this.uncheck_followers.splice(ignore_uncheck_follower, 1);
+			}
+		},
 		unCheckFollowers() {
 			// フォロワーから見たことあるフォロワーリストを除外
 			const unCheck_followers = this.current_user_followers.filter(
@@ -92,20 +139,6 @@ export default {
 			// console.log(unCheck_followers);
 			this.uncheck_followers = unCheck_followers;
 			// console.log(this.uncheck_followers);
-		},
-		async getCurrentUserMutings() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(`/api/users/${current_user.id}/muting_users`);
-			this.current_user_mutings = res.data.users;
-			// console.log(this.current_user_mutings)
-		},
-		async getCurrentUserBlockings() {
-			const current_user = this.$store.getters["auth/reference_currentUser"];
-			const res = await axios.get(
-				`/api/users/${current_user.id}/blocking_users`
-			);
-			this.current_user_blockings = res.data.users;
-			// console.log(this.current_user_blockings)
 		},
 	},
 };
