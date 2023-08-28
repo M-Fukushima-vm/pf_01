@@ -9,10 +9,11 @@ Rails.application.routes.draw do
       end
     end
     resource :session, only: %i[create]
-    resources :relationships, param: :followed_id, only: [:create, :destroy]
-    resources :mute_users, param: :muted_id, only: [:create, :destroy]
-    resources :block_users, param: :blocked_id, only: [:create, :destroy]
+    resources :relationships, param: :followed_id, only: %i[create destroy]
+    resources :mute_users, param: :muted_id, only: %i[create destroy]
+    resources :block_users, param: :blocked_id, only: %i[create destroy]
     resources :seen_followers, param: :passive_user_id, only: :create
+		resources :memos, only: %i[create destroy]
 
     namespace :me do
       resource :account, only: %i[update destroy]
