@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       member do
         get :followings, :followers, :mates, :muting_users, :blocking_users, :seen_followers
       end
+			resources :memos, only: %i[index update]
     end
     resource :session, only: %i[create]
     resources :relationships, param: :followed_id, only: %i[create destroy]
