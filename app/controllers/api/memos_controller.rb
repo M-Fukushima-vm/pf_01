@@ -1,5 +1,5 @@
 class Api::MemosController < ApplicationController
-	before_action :authenticate, only: %i[create destroy]
+	before_action :authenticate, only: %i[create update destroy]
 
 	PAGINATES_PAR = 8
 
@@ -28,6 +28,15 @@ class Api::MemosController < ApplicationController
 		# debugger
 	end
 
+	def update
+		# debugger
+		memo = current_user.memos.find(params[:id])
+		memo.update!(target_params)
+		render json: memo, serializer: MemoSerializer
+		# debugger
+	end
+
+
 	def destroy
 		debugger
 	end
@@ -35,7 +44,7 @@ class Api::MemosController < ApplicationController
 	private
 
 	def target_params
-		params.require(:memo).permit(:id, :memo_title, :memo_content, :note_shortId, :note_title, :note_content)
+		params.require(:memo).permit(:memo_title, :memo_content, :note_shortId, :note_title, :note_content)
 	end
 
 	def search_params

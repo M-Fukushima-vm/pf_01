@@ -39,16 +39,26 @@
 					width="300"
 				>
 					<template v-for="memo in memos">
-						<v-list-item :key="memo.id" link>
+						<v-list-item
+							:key="memo.id"
+							link
+							three-line
+							@focus.stop="focus(memo)"
+						>
 							<v-list-item-content>
-								<v-list-item-title
-									v-text="memo.memo_title"
-									class="subtitle-1 text--secondary"
-								></v-list-item-title>
-								<v-list-item-subtitle
-									v-text="memo.memo_content"
-									class="caption"
-								></v-list-item-subtitle>
+								<v-row align="center">
+									<v-col>
+										<v-list-item-title
+											v-text="memo.memo_title"
+											class="subtitle-1 text--secondary"
+										></v-list-item-title>
+										<v-list-item-subtitle
+											v-text="memo.memo_content"
+											class="caption"
+										></v-list-item-subtitle>
+									</v-col>
+									<edit-memo-modal :memo="memo" />
+								</v-row>
 							</v-list-item-content>
 						</v-list-item>
 						<v-divider />
@@ -74,13 +84,15 @@
 <script>
 import axios from "axios";
 import qs from "qs";
+import editMemoModal from "@/components/modal/EditMemoModal";
 
 export default {
-	props: {
-		current_user: {},
-		// 	followings: {},
-		// 	seen_followers: {},
+	components: {
+		editMemoModal,
 	},
+	// props: {
+	//
+	// },
 	data() {
 		return {
 			memos: [],
@@ -89,7 +101,7 @@ export default {
 			query: {
 				memoTitle: "",
 			},
-			onFocus: false,
+			// onFocus: false,
 		};
 	},
 	created() {
@@ -99,6 +111,9 @@ export default {
 		searchFocus() {
 			this.$refs.searchMemo.focus();
 		},
+		// focus(memo) {
+		// 	this.onFocus = true;
+		// },
 		paging(pageNumber) {
 			this.currentPage = pageNumber;
 			this.fetchMemos();

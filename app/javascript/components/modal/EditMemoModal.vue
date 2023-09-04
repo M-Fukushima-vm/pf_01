@@ -1,0 +1,143 @@
+<template>
+	<div>
+		<v-dialog v-model="isOpen" hide-overlay width="600px">
+			<template #activator="{ on }">
+				<v-btn icon class="mx-4 mt-1" v-on="on" @click="formFocus">
+					<div>
+						<v-icon color="grey darken-1" small>
+							mdi-tune-vertical-variant
+						</v-icon>
+						<v-list-item-title class="text-caption">Edit</v-list-item-title>
+					</div>
+				</v-btn>
+			</template>
+
+			<v-list-item
+				class="pa-7"
+				:style="{ background: 'rgba(240, 240, 245, 0.82)' }"
+			>
+				<v-card
+					outlined
+					color="transparent"
+					class="justify-center"
+					min-width="540px"
+				>
+					<v-form ref="form" lazy-validation class="mb-3">
+						<v-text-field
+							class="py-2 mr-2"
+							v-model="memo.memo_title"
+							:rules="memoTitleRules"
+							label="memo_title:"
+							dense
+							required
+							prepend-icon="mdi-format-title"
+							persistent-hint
+							hint="空白への変更はできません"
+							ref="modalTop"
+						></v-text-field>
+
+						<v-textarea
+							class="py-2 mr-2"
+							v-model="memo.memo_content"
+							label="memo_description:"
+							dense
+							auto-grow
+							prepend-icon="mdi-text"
+							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
+						></v-textarea>
+
+						<v-card-actions class="mt-n1 mb-n7">
+							<v-spacer />
+							<v-spacer />
+
+							<v-btn icon color="success" @click="saveEditMemo(memo)">
+								<div>
+									<v-icon>mdi-check-circle</v-icon>
+									<v-list-item-title class="text-caption">
+										update
+									</v-list-item-title>
+								</div>
+							</v-btn>
+
+							<v-spacer />
+
+							<v-btn icon @click="closeForm">
+								<div>
+									<v-icon>mdi-close</v-icon>
+									<v-list-item-title class="text-caption"
+										>cancel</v-list-item-title
+									>
+								</div>
+							</v-btn>
+
+							<v-spacer />
+							<v-spacer />
+						</v-card-actions>
+					</v-form>
+				</v-card>
+			</v-list-item>
+		</v-dialog>
+	</div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+	props: {
+		memo: {},
+	},
+	data() {
+		return {
+			isOpen: false,
+			// title: "",
+			// description: "",
+		};
+	},
+	computed: {
+		memoTitleRules() {
+			// 必須入力
+			return [(v) => !!v || "Titleは必ず入力してください"];
+		},
+	},
+	mounted() {
+		//
+	},
+	methods: {
+		async formFocus() {
+			await (this.isOpen = true);
+			this.$nextTick(() => {
+				this.$refs.modalTop.focus();
+			});
+		},
+		async saveEditMemo(memo) {
+			if (this.$refs.form.validate()) {
+				try {
+					const current_user =
+						this.$store.getters["auth/reference_currentUser"];
+					const editMemoParams = {
+						memo: {
+							memo_title: memo.memo_title,
+							memo_content: memo.memo_content,
+						},
+					};
+					await axios.patch(
+						`/api/users/${current_user.id}/memos/${memo.id}`,
+						editMemoParams
+					);
+					this.closeForm();
+				} catch (error) {
+					alert(error.response.data.error.messages);
+				}
+			}
+		},
+		closeForm() {
+			this.isOpen = false;
+			// this.title = "";
+			// this.description = "";
+		},
+	},
+};
+</script>
+
+<style lang="scss" scoped></style>
