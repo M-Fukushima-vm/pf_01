@@ -1,12 +1,17 @@
 ja:
   activerecord:
     models:
-      user: 'ユーザー'
+      user: "ユーザー"
+      memo: "メモ"
     attributes:
       user:
-        name: 'ユーザー名'
-        email: 'メールアドレス'
-        password_digest: 'パスワード'
-        avatar_name: '文字アイコン'
-        introduction: '紹介文'
-      
+        name: "ユーザー名"
+        email: "メールアドレス"
+        password_digest: "パスワード"
+        avatar_name: "文字アイコン"
+        introduction: "紹介文"
+      memo:
+        memo_title: "メモタイトル"
+        memo_content: "メモ補足"
+        note_title: "ノートタイトル"
+        note_content: "ノート本文"

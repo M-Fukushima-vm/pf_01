@@ -67,4 +67,6 @@ class User < ApplicationRecord
                                   dependent: :destroy
   has_many :looked_left_users, through: :passive_seen_followers, # 取得用
                                 source: :looked_user
+
+	has_many :memos, dependent: :destroy
 end
