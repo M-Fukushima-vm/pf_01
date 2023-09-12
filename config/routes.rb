@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :block_users, param: :blocked_id, only: %i[create destroy]
     resources :seen_followers, param: :passive_user_id, only: :create
 		resources :memos, only: %i[create destroy]
+		resources :hackmd_accounts, only: %i[index create destroy]
 
     namespace :me do
       resource :account, only: %i[update destroy]

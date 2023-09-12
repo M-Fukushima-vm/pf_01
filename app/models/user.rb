@@ -69,4 +69,6 @@ class User < ApplicationRecord
                                 source: :looked_user
 
 	has_many :memos, dependent: :destroy
+
+	has_one :hackmd_account, dependent: :destroy
 end

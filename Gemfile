@@ -32,6 +32,8 @@ gem 'kaminari'
 
 gem 'ridgepole'
 
+gem 'lockbox'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

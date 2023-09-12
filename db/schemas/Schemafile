@@ -1,5 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'hackmd_accounts.schema.rb'
 require 'memos.schema.rb'
 require 'seen_followers.schema.rb'
 require 'block_users.schema.rb'
