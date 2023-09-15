@@ -11,10 +11,65 @@
 			</template>
 
 			<v-list-item
-				class="pa-7 mb-1"
+				class="pa-7"
 				:style="{ background: 'rgba(240, 240, 245, 0.82)' }"
 			>
 				<v-card
+					v-show="hackmd_account_name"
+					outlined
+					color="transparent"
+					class="justify-center"
+					min-width="640px"
+				>
+					<v-list-item-subtitle class="py-2 mr-2 ml-9 mb-3">
+						<div class="text-center">
+							*
+							<span class="error--text body-1 font-weight-medium">{{
+								hackmd_account_name
+							}}</span>
+							* のキー名の HackMD APIキー を<br />
+							ご登録・使用中です。
+						</div>
+					</v-list-item-subtitle>
+
+					<v-row class="text-center text-caption grey--text" align="center">
+						<v-col>
+							<div>
+								<v-icon color="grey lighten-1" class="mt-n1">mdi-cat</v-icon>
+								*
+								登録APIキーを変更の場合は、現在の登録キーを削除して再登録下さい
+								*
+							</div>
+						</v-col>
+					</v-row>
+
+					<v-card-actions class="justify-center mt-3 mb-n3">
+						<v-spacer />
+						<v-btn icon class="mr-9" color="error" @click="deleteHackmd">
+							<div>
+								<v-icon>mdi-trash-can-outline</v-icon>
+								<v-list-item-title class="text-caption"
+									>delete</v-list-item-title
+								>
+							</div>
+						</v-btn>
+
+						<!-- <v-spacer /> -->
+
+						<v-btn icon class="ml-9" @click="closeForm">
+							<div>
+								<v-icon>mdi-close</v-icon>
+								<v-list-item-title class="text-caption"
+									>cancel</v-list-item-title
+								>
+							</div>
+						</v-btn>
+
+						<v-spacer />
+					</v-card-actions>
+				</v-card>
+				<v-card
+					v-show="!hackmd_account_name"
 					outlined
 					color="transparent"
 					class="justify-center"
@@ -124,6 +179,7 @@ export default {
 			key_name: "",
 			api_key: "",
 			ok_agree: false,
+			hackmd_account_name: "",
 		};
 	},
 	computed: {
@@ -141,37 +197,63 @@ export default {
 			return [(v) => !!v || "必ず入力してください"];
 		},
 	},
-	mounted() {
-		//
+	created() {
+		this.getHackmd();
 	},
 	methods: {
 		async formFocus() {
-			this.getApiKeySaveKey();
 			this.ok_agree = true;
 			await (this.isOpen = true);
 			this.$nextTick(() => {
 				this.$refs.modalTop.focus();
 			});
 		},
-		async getApiKeySaveKey() {
-			await this.$store.dispatch("hackmd/get_api_key_save_key");
-		},
 		async saveHackmd() {
 			if (this.$refs.form.validate()) {
+				const current_user = this.$store.getters["auth/reference_currentUser"];
+				const sendToken = btoa(this.api_key);
+				const hackmdParams = {
+					hackmd_account: {
+						key_name: this.key_name,
+						api_key: sendToken,
+						user_id: current_user.id,
+					},
+				};
+				// console.log("-------------------------------------");
+				// console.log("this.api_key");
+				// console.log(this.api_key);
+				// console.log("-------------------------------------");
+				// console.log("sendToken");
+				// console.log(sendToken);
+				// console.log("-------------------------------------");
 				try {
-					const current_user =
-						this.$store.getters["auth/reference_currentUser"];
-					const hackmdParams = {
-						hackmd_account: {
-							key_name: this.key_name,
-							api_key: this.api_key,
-							user_id: current_user.id,
-						},
-					};
-					await axios.post(`/api/hackmd_accounts`, hackmdParams);
+					await this.$store.dispatch("hackmd/save", hackmdParams);
 				} catch (error) {
+					console.log(JSON.stringify(error.response.data.error.messages));
 					alert(error.response.data.error.messages);
 				}
+				this.closeForm();
+				const hackmd_account_name =
+					this.$store.getters["hackmd/hackmdAccountName"];
+				this.hackmd_account_name = hackmd_account_name;
+			}
+		},
+		async getHackmd() {
+			try {
+				await this.$store.dispatch("hackmd/get");
+			} catch (error) {
+				console.log(error.response.data.error.messages);
+			}
+			const hackmd_account_name =
+				this.$store.getters["hackmd/hackmdAccountName"];
+			this.hackmd_account_name = hackmd_account_name;
+		},
+		async deleteHackmd() {
+			try {
+				await this.$store.dispatch("hackmd/delete");
+				this.hackmd_account_name = "";
+			} catch (error) {
+				console.log(JSON.stringify(error.response.data.error.messages));
 			}
 		},
 		closeForm() {

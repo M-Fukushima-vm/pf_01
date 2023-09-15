@@ -1,4 +1,4 @@
-class HacmdAccount < ApplicationRecord
+class HackmdAccount < ApplicationRecord
 	has_encrypted :api_key
 
 	# アソシエーションの定義
@@ -6,5 +6,5 @@ class HacmdAccount < ApplicationRecord
 	# バリデーションの定義
 	validates :key_name, presence: true
 	validates :api_key, presence: true
-	validates :user_id, presence: true
+	validates :user_id, presence: true, uniqueness: true
 end

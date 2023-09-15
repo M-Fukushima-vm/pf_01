@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :hacmd_account do
+  factory :hackmd_account do
     
   end
 end

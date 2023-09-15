@@ -1,25 +1,35 @@
 class Api::HackmdAccountsController < ApplicationController
 	before_action :authenticate, only: %i[index create destroy]
 
-	def index 
-		# api_key 登録専用キーの呼び出し
-		save_key = Rails.application.credentials.hackmd[:api_key_save_key]
-		render json: save_key
+	def index
+		# debugger
+		hackmd_account = HackmdAccount.find_by(user_id: current_user.id)
+		if hackmd_account.present?
+			render json: hackmd_account, serializer: HackmdAccountSerializer
+		else
+			render json: { error: { messages: ['apiキーは登録されていません'] } },
+      status: 404
+		end
 	end
 
 	def create
-		debugger
-		# HackmdAccount.create!(target_params)
-
+		# フロントのVueでBase64変換したもので暗号化して保存する ←方針変更
+		# 外部apiにアクセスする時にデコードしたものでアクセスする
+		# access_api_key = Base64.decode64(target_params[:api_key])
+		# debugger
+		hackmd_account = HackmdAccount.create!(target_params)
+		render json: hackmd_account, serializer: HackmdAccountSerializer
 	end
 
 	def destroy
-		debugger
+		# debugger
+		hackmd_account = HackmdAccount.find(params[:id])
+		hackmd_account.destroy!
 	end
 
 	private
 
 	def target_params
-		params.requite(:hackmd_account).permit(:key_name, :api_key, :user_id)
+		params.require(:hackmd_account).permit(:key_name, :api_key, :user_id)
 	end
 end
