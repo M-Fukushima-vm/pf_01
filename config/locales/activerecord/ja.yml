@@ -3,6 +3,7 @@ ja:
     models:
       user: "ユーザー"
       memo: "メモ"
+      hackmd_account: "HackMDアカウント"
     attributes:
       user:
         name: "ユーザー名"
@@ -15,3 +16,7 @@ ja:
         memo_content: "メモ補足"
         note_title: "ノートタイトル"
         note_content: "ノート本文"
+      hackmd_account:
+        key_name: "APIキー名"
+        api_key: "APIキー"
+        user_id: "そのAPIキー"

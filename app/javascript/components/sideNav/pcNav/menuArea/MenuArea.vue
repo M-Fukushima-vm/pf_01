@@ -13,7 +13,12 @@
 				</v-list-item-icon>
 				<v-list-item-title>Shared with me</v-list-item-title>
 			</v-list-item>
-			<v-list-item to="/memos" link class="px-1 mx-1">
+			<v-list-item
+				v-if="$store.getters['auth/currentUser']"
+				to="/memos"
+				link
+				class="px-1 mx-1"
+			>
 				<v-list-item-icon>
 					<v-icon>mdi-file-document-outline</v-icon>
 				</v-list-item-icon>

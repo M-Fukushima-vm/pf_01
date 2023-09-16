@@ -1,11 +1,14 @@
 {
-  "cSpell.words": [
-    "cansel",
-    "datetime",
-    "loginform",
-    "Mutings",
-    "shortkey",
-    "Signin",
-    "unfollow"
-  ]
+	"cSpell.words": [
+		"activerecord",
+		"cansel",
+		"ciphertext",
+		"datetime",
+		"Hackmd",
+		"loginform",
+		"Mutings",
+		"shortkey",
+		"Signin",
+		"unfollow"
+	]
 }
