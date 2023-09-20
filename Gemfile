@@ -34,6 +34,10 @@ gem 'ridgepole'
 
 gem 'lockbox'
 
+gem 'faraday'
+
+gem 'virtus'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

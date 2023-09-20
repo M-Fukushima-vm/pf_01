@@ -31,13 +31,13 @@ const mutations = {
 //                    主にmutationsから選択して実行
 const actions = {
 	async save({ commit }, hackmdParams) {
-		const res = await axios.post(`/api/hackmd_accounts`, hackmdParams);
+		const res = await axios.post(`/api/hackmd_account`, hackmdParams);
 		// console.log(res.data.hackmd_account);
 		// console.log("-------------------------------------");
 		commit("SET_HACKMD_ACCOUNT", res.data.hackmd_account);
 	},
 	async get({ commit }) {
-		const res = await axios.get(`/api/hackmd_accounts`);
+		const res = await axios.get(`/api/users/hackmd_account`);
 		// console.log(res.data);
 		// console.log(res.data.hackmd_account);
 		// console.log("-------------------------------------");
@@ -47,7 +47,8 @@ const actions = {
 	},
 	async delete({ commit, state }) {
 		try {
-			await axios.delete(`/api/hackmd_accounts/${state.hackmdAccount.id}`);
+			// await axios.delete(`/api/hackmd_account/${state.hackmdAccount.id}`);
+			await axios.delete(`/api/hackmd_account/`);
 		} catch (error) {
 			console.log(JSON.stringify(error.response.data.error.messages));
 		}
