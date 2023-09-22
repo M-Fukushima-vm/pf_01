@@ -23,15 +23,4 @@ class Api::Hackmd::SearchUserNotesForm
     ::EntrySerializer
   end
 
-	
-  def search(value)
-		by_title(value) if value.present?
-  end
-	
-	private
-	
-	def by_title(title)
-		where('title LIKE ?', "%#{title}%")
-	end
-	
 end

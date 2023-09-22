@@ -18,8 +18,8 @@ const getters = {
 const mutations = {
 	SET_HACKMD_ACCOUNT: (state, account) => {
 		state.hackmdAccount = account;
-		const decoded_api_key = atob(account.api_key);
-		state.hackmdAccount.api_key = decoded_api_key;
+		// const decoded_api_key = atob(account.api_key);
+		// state.hackmdAccount.api_key = decoded_api_key;
 	},
 	CLEAR_HACKMD_ACCOUNT: () => {
 		state.hackmdAccount = null;

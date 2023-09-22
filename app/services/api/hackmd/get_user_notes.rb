@@ -53,11 +53,9 @@ module Api::Hackmd::GetUserNotes
 			end
 
 			searched_notes = []
-			if search_params.present?
-				user_notes.each do |note|
-					# debugger
-					searched_notes << note.search(search_params)
-				end
+			# debugger
+			if search_params[:title].present?
+				searched_notes = user_notes.select{ |item| item.title.downcase.include?(search_params[:title].downcase) }
 				searched_notes
 			else
 				user_notes
