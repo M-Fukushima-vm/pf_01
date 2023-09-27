@@ -92,6 +92,17 @@ class Api::UsersController < ApplicationController
     # debugger
   end
 
+	def hackmd_account
+		# debugger
+		hackmd_account = HackmdAccount.find_by(user_id: current_user.id)
+		if hackmd_account.present?
+			render json: hackmd_account, serializer: HackmdAccountSerializer
+		else
+			render json: { error: { messages: ['apiキーは登録されていません'] } },
+      status: 404
+		end
+	end
+
   private
 
   def user_params

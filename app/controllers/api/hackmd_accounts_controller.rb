@@ -1,16 +1,5 @@
 class Api::HackmdAccountsController < ApplicationController
-	before_action :authenticate, only: %i[index create destroy]
-
-	def index
-		# debugger
-		hackmd_account = HackmdAccount.find_by(user_id: current_user.id)
-		if hackmd_account.present?
-			render json: hackmd_account, serializer: HackmdAccountSerializer
-		else
-			render json: { error: { messages: ['apiキーは登録されていません'] } },
-      status: 404
-		end
-	end
+	before_action :authenticate, only: %i[create destroy]
 
 	def create
 		# フロントのVueでBase64変換したもので暗号化して保存する ←方針変更
@@ -23,8 +12,9 @@ class Api::HackmdAccountsController < ApplicationController
 
 	def destroy
 		# debugger
-		hackmd_account = HackmdAccount.find(params[:id])
-		hackmd_account.destroy!
+		user = User.includes(:hackmd_account).find(current_user.id)
+		account = user.hackmd_account
+		account.destroy!
 	end
 
 	private

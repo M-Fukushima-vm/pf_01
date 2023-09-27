@@ -8,6 +8,7 @@ import PageMuteUsers from "@/pages/PageMuteUsers";
 import PageBlockUsers from "@/pages/PageBlockUsers";
 import PageFollowers from "@/pages/PageFollowers";
 import PageMemos from "@/pages/PageMemos";
+import PageHackmdNotes from "@/pages/PageHackmdNotes";
 const router = new VueRouter({
 	routes: [
 		{ path: "/", component: colorSample, name: "top" },
@@ -17,6 +18,7 @@ const router = new VueRouter({
 		{ path: "/block_users", component: PageBlockUsers, name: "block_users" },
 		{ path: "/followers", component: PageFollowers, name: "followers" },
 		{ path: "/memos", component: PageMemos, name: "memos" },
+		{ path: "/hackmd_notes", component: PageHackmdNotes, name: "hackmd_notes" },
 	],
 });
 
