@@ -2,15 +2,23 @@
 	<div>
 		<v-dialog v-model="isOpen" hide-overlay width="600px">
 			<template #activator="{ on }" class="py-n1">
-				<v-list-item three-line v-on="on">
-					<v-list-item-content>
+				<v-list-item three-line>
+					<v-list-item-content v-on="on">
 						<v-list-item-title class="subtitle-1 text--secondary mb-n3">
 							{{ data.title }}
 						</v-list-item-title>
 						<v-list-item-subtitle class="text-caption">
-							{{ data.content }}
+							公開リンク末尾 : {{ data.short_id }}
 						</v-list-item-subtitle>
 					</v-list-item-content>
+					<v-btn icon class="mx-4 mt-1" @click="">
+						<div>
+							<v-icon color="grey darken-1" small class="mb-n1">
+								mdi-arrow-collapse-down
+							</v-icon>
+							<v-list-item-title class="text-caption">Import</v-list-item-title>
+						</div>
+					</v-btn>
 				</v-list-item>
 			</template>
 
@@ -27,37 +35,35 @@
 					<v-form ref="form" lazy-validation class="mb-3">
 						<v-text-field
 							class="py-2 mr-2"
-							v-model="title"
-							:rules="memoTitleRules"
-							label="memo_title:"
+							v-model="data.title"
+							label="title:"
 							dense
 							required
 							prepend-icon="mdi-format-title"
-							persistent-hint
-							hint="入力必須"
+							readonly
 							ref="modalTop"
 						></v-text-field>
 
-						<v-textarea
+						<v-text-field
 							class="py-2 mr-2"
-							v-model="description"
-							label="memo_description:"
+							v-model="data.short_id"
+							label="公開リンクの末尾 : "
 							dense
 							auto-grow
-							prepend-icon="mdi-text"
-							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
-						></v-textarea>
+							prepend-icon="mdi-identifier"
+							readonly
+						></v-text-field>
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
 							<v-spacer />
 
-							<v-btn icon color="info" @click="saveNewMemo">
+							<v-btn icon @click="checkSourceLink" color="success">
 								<div>
-									<v-icon>mdi-check-circle</v-icon>
-									<v-list-item-title class="text-caption">
-										save
-									</v-list-item-title>
+									<v-icon>mdi-open-in-new</v-icon>
+									<v-list-item-title class="text-caption"
+										>check</v-list-item-title
+									>
 								</div>
 							</v-btn>
 
@@ -67,7 +73,7 @@
 								<div>
 									<v-icon>mdi-close</v-icon>
 									<v-list-item-title class="text-caption"
-										>cancel</v-list-item-title
+										>close</v-list-item-title
 									>
 								</div>
 							</v-btn>
@@ -92,15 +98,15 @@ export default {
 	data() {
 		return {
 			isOpen: false,
-			title: "",
-			description: "",
+			// title: "",
+			// description: "",
 		};
 	},
 	computed: {
-		memoTitleRules() {
-			// 必須入力
-			return [(v) => !!v || "Titleは必ず入力してください"];
-		},
+		// memoTitleRules() {
+		// 	// 必須入力
+		// 	return [(v) => !!v || "Titleは必ず入力してください"];
+		// },
 	},
 	mounted() {
 		//
@@ -129,6 +135,9 @@ export default {
 			// 		alert(error.response.data.error.messages);
 			// 	}
 			// }
+		},
+		checkSourceLink() {
+			window.open(this.data.link, "_blank");
 		},
 		closeForm() {
 			this.isOpen = false;

@@ -71,4 +71,6 @@ class User < ApplicationRecord
 	has_many :memos, dependent: :destroy
 
 	has_one :hackmd_account, dependent: :destroy
+
+	has_many :hackmd_archives, dependent: :destroy
 end

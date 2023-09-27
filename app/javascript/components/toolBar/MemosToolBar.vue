@@ -9,7 +9,7 @@
 				<v-btn to="/memos" icon class="mx-4 mt-1" align="center">
 					<div>
 						<v-icon>mdi-file-document-outline</v-icon>
-						<v-list-item-title class="text-caption">HackMD</v-list-item-title>
+						<v-list-item-title class="text-caption">Memos</v-list-item-title>
 					</div>
 				</v-btn>
 			</v-list-item-icon>
@@ -21,7 +21,10 @@
 					</div>
 				</v-btn>
 			</v-list-item-icon>
-			<v-list-item-icon class="ml-12" v-if="$store.getters['auth/currentUser']">
+			<v-list-item-icon
+				class="ml-9"
+				v-if="$store.getters['auth/reference_currentUser']"
+			>
 				<hackmd-account />
 			</v-list-item-icon>
 			<v-spacer />
