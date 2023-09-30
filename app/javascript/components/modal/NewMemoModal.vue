@@ -44,6 +44,8 @@
 							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
 						></v-textarea>
 
+						<tiptap />
+
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
 							<v-spacer />
@@ -80,11 +82,15 @@
 
 <script>
 import axios from "axios";
+import Tiptap from "@/components/editor/Tiptap";
 
 export default {
 	// props: {
 	//
 	// },
+	components: {
+		Tiptap,
+	},
 	data() {
 		return {
 			isOpen: false,
