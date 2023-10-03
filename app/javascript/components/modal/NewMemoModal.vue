@@ -34,7 +34,7 @@
 							ref="modalTop"
 						></v-text-field>
 
-						<v-textarea
+						<!-- <v-textarea
 							class="py-2 mr-2"
 							v-model="description"
 							label="memo_description:"
@@ -42,9 +42,9 @@
 							auto-grow
 							prepend-icon="mdi-text"
 							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
-						></v-textarea>
+						></v-textarea> -->
 
-						<tiptap />
+						<tiptap @input="getTiptapInput" />
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
@@ -96,6 +96,7 @@ export default {
 			isOpen: false,
 			title: "",
 			description: "",
+			tiptapInput: null,
 		};
 	},
 	computed: {
@@ -104,9 +105,9 @@ export default {
 			return [(v) => !!v || "Titleは必ず入力してください"];
 		},
 	},
-	mounted() {
-		//
-	},
+	// mounted() {
+	//
+	// },
 	methods: {
 		async formFocus() {
 			await (this.isOpen = true);
@@ -120,19 +121,26 @@ export default {
 					const newMemoParams = {
 						memo: {
 							memo_title: this.title,
-							memo_content: this.description,
+							// memo_content: this.description,
+							memo_content: this.tiptapInput,
 						},
 					};
 					await axios.post(`/api/memos`, newMemoParams);
+					this.closeForm();
 				} catch (error) {
 					alert(error.response.data.error.messages);
 				}
 			}
 		},
+		getTiptapInput(value) {
+			this.tiptapInput = value;
+			// console.log(value);
+		},
 		closeForm() {
 			this.isOpen = false;
 			this.title = "";
 			this.description = "";
+			this.tiptapInput = "";
 		},
 	},
 };

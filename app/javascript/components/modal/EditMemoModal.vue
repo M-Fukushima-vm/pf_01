@@ -36,7 +36,7 @@
 							ref="modalTop"
 						></v-text-field>
 
-						<v-textarea
+						<!-- <v-textarea
 							class="py-2 mr-2"
 							v-model="memo.memo_content"
 							label="memo_description:"
@@ -44,7 +44,9 @@
 							auto-grow
 							prepend-icon="mdi-text"
 							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
-						></v-textarea>
+						></v-textarea> -->
+
+						<tiptap v-model="memo.memo_content" @input="getTiptapInput" />
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
@@ -82,14 +84,19 @@
 
 <script>
 import axios from "axios";
+import Tiptap from "@/components/editor/Tiptap";
 
 export default {
 	props: {
 		memo: {},
 	},
+	components: {
+		Tiptap,
+	},
 	data() {
 		return {
 			isOpen: false,
+			tiptapInput: null,
 			// title: "",
 			// description: "",
 		};
@@ -118,7 +125,8 @@ export default {
 					const editMemoParams = {
 						memo: {
 							memo_title: memo.memo_title,
-							memo_content: memo.memo_content,
+							// memo_content: memo.memo_content,
+							memo_content: this.tiptapInput,
 						},
 					};
 					await axios.patch(
@@ -130,6 +138,10 @@ export default {
 					alert(error.response.data.error.messages);
 				}
 			}
+		},
+		getTiptapInput(value) {
+			this.tiptapInput = value;
+			// console.log(value);
 		},
 		closeForm() {
 			this.isOpen = false;

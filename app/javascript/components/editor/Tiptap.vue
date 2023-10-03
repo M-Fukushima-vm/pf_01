@@ -63,6 +63,18 @@
 					H2
 				</button>
 				<button
+					@click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+					:class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
+				>
+					H3
+				</button>
+				<button
+					@click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+					:class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
+				>
+					H4
+				</button>
+				<button
 					@click="editor.chain().focus().toggleBulletList().run()"
 					:class="{ 'is-active': editor.isActive('bulletList') }"
 				>
@@ -84,6 +96,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent, BubbleMenu, FloatingMenu } from "@tiptap/vue-2";
 import CharacterCount from "@tiptap/extension-character-count";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import Placeholder from "@tiptap/extension-placeholder";
 
 // node_modules/lowlight/lib/common.js からimportする言語
 import bash from "highlight.js/lib/languages/bash";
@@ -154,12 +167,12 @@ export default {
 				JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
 
 			if (isSame) {
+				// console.log(isSame);
 				return;
 			}
 			this.editor.commands.setContent(value, false);
 		},
 	},
-
 	mounted() {
 		this.editor = new Editor({
 			content: this.value,
@@ -174,17 +187,19 @@ export default {
 				CodeBlockLowlight.configure({
 					lowlight,
 				}),
+				Placeholder.configure({
+					placeholder: "memo description …",
+				}),
 			],
 			onUpdate: () => {
 				// HTML
-				// this.$emit('input', this.editor.getHTML())
+				this.$emit("input", this.editor.getHTML());
 
 				// JSON
-				this.$emit("input", this.editor.getJSON());
+				// this.$emit("input", this.editor.getJSON());
 			},
 		});
 	},
-
 	beforeDestroy() {
 		this.editor.destroy();
 	},
@@ -194,6 +209,7 @@ export default {
 <style lang="scss">
 /* Basic editor styles */
 .tiptap {
+	padding: 0.75rem 1rem;
 	> * + * {
 		margin-top: 0.75em;
 	}
@@ -276,6 +292,15 @@ export default {
 	}
 }
 
+/* Placeholder (at the top) */
+.tiptap p.is-editor-empty:first-child::before {
+	content: attr(data-placeholder);
+	float: left;
+	color: #adb5bd;
+	pointer-events: none;
+	height: 0;
+}
+
 .bubble-menu {
 	display: flex;
 	background-color: #0d0d0d;
@@ -300,19 +325,22 @@ export default {
 
 .floating-menu {
 	display: flex;
-	background-color: #0d0d0d10;
+	// background-color: #0d0d0d10;
+	background-color: #5d5d5d;
 	padding: 0.2rem;
 	border-radius: 0.5rem;
 
 	button {
 		border: none;
 		background: none;
+		color: #fff;
 		font-size: 0.85rem;
 		font-weight: 500;
 		padding: 0 0.2rem;
 		opacity: 0.6;
 
 		&:hover,
+		&:focus,
 		&.is-active {
 			opacity: 1;
 		}

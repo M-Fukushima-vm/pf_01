@@ -8,6 +8,7 @@
     "@rails/webpacker": "5.4.3",
     "@tiptap/extension-character-count": "^2.1.11",
     "@tiptap/extension-code-block-lowlight": "^2.1.11",
+    "@tiptap/extension-placeholder": "^2.1.11",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/starter-kit": "^2.1.11",
     "@tiptap/vue-2": "^2.1.11",

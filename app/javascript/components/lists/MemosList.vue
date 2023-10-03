@@ -39,12 +39,7 @@
 					width="300"
 				>
 					<template v-for="memo in memos">
-						<v-list-item
-							:key="memo.id"
-							link
-							three-line
-							@focus.stop="focus(memo)"
-						>
+						<v-list-item :key="memo.id" link three-line>
 							<v-list-item-content>
 								<v-row align="center">
 									<v-col>
