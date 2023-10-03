@@ -4,6 +4,7 @@ class Api::MemosController < ApplicationController
 	PAGINATES_PAR = 8
 
 	def index
+		# debugger
 		search_memos_form = SearchMemosForm.new(search_params)
 		memos = search_memos_form.search( current_user.id ).order(updated_at: :desc)
 		memos = memos.page(params[:page]).per(PAGINATES_PAR)
@@ -17,21 +18,23 @@ class Api::MemosController < ApplicationController
 
 	def create
 		# debugger
-		Memo.create!(
-			memo_title: target_params[:memo_title],
-			memo_content: target_params[:memo_content],
-			user_id: current_user.id,
-			note_shortId: target_params[:note_shortId],
-			note_title: target_params[:note_title],
-			note_content: target_params[:note_content]
-		)
+		memo =	Memo.create!(
+							title: target_params[:title],
+							intro: target_params[:intro],
+							user_id: current_user.id,
+							content: target_params[:content],
+							# note_shortId: target_params[:note_shortId],
+							# note_title: target_params[:note_title],
+							# note_content: target_params[:note_content]
+						)
+		render json: memo, serializer: MemoSerializer
 		# debugger
 	end
 
 	def update
 		# debugger
 		memo = current_user.memos.find(params[:id])
-		memo.update!(target_params)
+		memo.update(target_params)
 		render json: memo, serializer: MemoSerializer
 		# debugger
 	end
@@ -44,13 +47,13 @@ class Api::MemosController < ApplicationController
 	private
 
 	def target_params
-		params.require(:memo).permit(:memo_title, :memo_content, :note_shortId, :note_title, :note_content)
+		params.require(:memo).permit(:title, :intro, :content)
 	end
 
 	def search_params
     # 送るパラメーターをqハッシュでまとめ
     # params[:q] が nil だったら、nil。あれば、以降を実行
-    params[:q]&.permit(:memo_title)
+    params[:q]&.permit(:title)
   end
 
 end

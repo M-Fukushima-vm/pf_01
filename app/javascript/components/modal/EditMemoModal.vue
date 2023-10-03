@@ -25,7 +25,7 @@
 					<v-form ref="form" lazy-validation class="mb-3">
 						<v-text-field
 							class="py-2 mr-2"
-							v-model="memo.memo_title"
+							v-model="memo.title"
 							:rules="memoTitleRules"
 							label="memo_title:"
 							dense
@@ -46,7 +46,7 @@
 							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
 						></v-textarea> -->
 
-						<tiptap v-model="memo.memo_content" @input="getTiptapInput" />
+						<tiptap v-model="memo.content" @input="getTiptapInput" />
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
@@ -97,6 +97,7 @@ export default {
 		return {
 			isOpen: false,
 			tiptapInput: null,
+			intro: null,
 			// title: "",
 			// description: "",
 		};
@@ -124,9 +125,10 @@ export default {
 						this.$store.getters["auth/reference_currentUser"];
 					const editMemoParams = {
 						memo: {
-							memo_title: memo.memo_title,
+							title: memo.title,
 							// memo_content: memo.memo_content,
-							memo_content: this.tiptapInput,
+							intro: this.intro || memo.intro,
+							content: this.tiptapInput || memo.content,
 						},
 					};
 					await axios.patch(
@@ -140,8 +142,19 @@ export default {
 			}
 		},
 		getTiptapInput(value) {
+			console.log(value);
 			this.tiptapInput = value;
-			// console.log(value);
+			// HTMLデータをDOM要素に変換
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(value, "text/html");
+			// テキストを抽出する
+			// const text = doc.body.textContent || doc.body.innerText;
+			const text = doc.body.innerText;
+			// console.log(text);
+			// 最初の150文字を抜き出す
+			const intro_text = text.substring(0, 150);
+			// console.log(intro_text);
+			this.intro = intro_text;
 		},
 		closeForm() {
 			this.isOpen = false;

@@ -97,6 +97,7 @@ export default {
 			title: "",
 			description: "",
 			tiptapInput: null,
+			intro: null,
 		};
 	},
 	computed: {
@@ -120,9 +121,10 @@ export default {
 				try {
 					const newMemoParams = {
 						memo: {
-							memo_title: this.title,
+							title: this.title,
 							// memo_content: this.description,
-							memo_content: this.tiptapInput,
+							intro: this.intro,
+							content: this.tiptapInput,
 						},
 					};
 					await axios.post(`/api/memos`, newMemoParams);
@@ -133,8 +135,19 @@ export default {
 			}
 		},
 		getTiptapInput(value) {
-			this.tiptapInput = value;
 			// console.log(value);
+			this.tiptapInput = value;
+			// HTMLデータをDOM要素に変換
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(value, "text/html");
+			// テキストを抽出する
+			// const text = doc.body.textContent || doc.body.innerText;
+			const text = doc.body.innerText;
+			// console.log(text);
+			// 最初の150文字を抜き出す
+			const intro_text = text.substring(0, 150);
+			// console.log(intro_text);
+			this.intro = intro_text;
 		},
 		closeForm() {
 			this.isOpen = false;

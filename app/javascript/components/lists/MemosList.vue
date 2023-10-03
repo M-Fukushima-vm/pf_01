@@ -44,11 +44,11 @@
 								<v-row align="center">
 									<v-col>
 										<v-list-item-title
-											v-text="memo.memo_title"
+											v-text="memo.title"
 											class="subtitle-1 text--secondary"
 										></v-list-item-title>
 										<v-list-item-subtitle
-											v-text="memo.memo_content"
+											v-text="memo.intro"
 											class="caption"
 										></v-list-item-subtitle>
 									</v-col>
@@ -117,7 +117,7 @@ export default {
 		async fetchMemos() {
 			const searchParams = {
 				q: {
-					memo_title: this.query.memoTitle,
+					title: this.query.memoTitle,
 				},
 			};
 			const pagingParams = { page: this.currentPage };
