@@ -210,8 +210,14 @@ export default {
 /* Basic editor styles */
 .tiptap {
 	padding: 0.75rem 1rem;
+	color: #515151;
 	> * + * {
 		margin-top: 0.75em;
+	}
+
+	p {
+		line-height: 0.6;
+		font-size: 0.85rem;
 	}
 
 	pre {

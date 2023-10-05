@@ -96,7 +96,7 @@ export default {
 			try {
 				const res = await axios.post(`/api/hackmd_archives`);
 			} catch (error) {
-				console.log(error.response.data);
+				// console.log(error.response.data);
 				const statusCode = error.response.status;
 				const errorDetails = error.response.data.message;
 				const errorMessages = error.response.data.errors;

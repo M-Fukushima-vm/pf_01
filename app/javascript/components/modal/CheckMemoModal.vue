@@ -1,18 +1,53 @@
 <template>
 	<div>
 		<v-dialog v-model="isOpen" hide-overlay width="600px">
-			<template #activator="{ on }">
-				<v-btn icon class="mx-4 mt-1" v-on="on" @click="formFocus">
-					<div>
-						<v-icon color="grey darken-1" small>
-							mdi-tune-vertical-variant
-						</v-icon>
-						<v-list-item-title class="text-caption">Edit</v-list-item-title>
+			<template #activator="{ on }" class="py-n1">
+				<v-row align="center">
+					<v-col @mouseover="onFocus()" @mouseout="outFocus()">
+						<v-list-item
+							@focus="onFocus()"
+							@keydown.enter="openForm"
+							link
+							three-line
+						>
+							<v-list-item-content v-on="on">
+								<v-row align="center">
+									<v-col>
+										<v-list-item-title class="subtitle-1 text--secondary mb-1">
+											{{ data.title }}
+										</v-list-item-title>
+										<v-list-item-subtitle class="caption">
+											{{ data.intro }}
+										</v-list-item-subtitle>
+									</v-col>
+									<!-- <edit-memo-modal :memo="memo" /> -->
+								</v-row>
+							</v-list-item-content>
+						</v-list-item>
+					</v-col>
+					<div @mouseover="onFocus()" @mouseout="outFocus()">
+						<v-btn
+							v-show="nowFocus"
+							@blur="outFocus()"
+							@click="deleteMemo(data)"
+							icon
+							color="error"
+							class="mt-3"
+						>
+							<div>
+								<v-icon>mdi-trash-can-outline</v-icon>
+								<v-list-item-title class="text-caption">
+									delete
+								</v-list-item-title>
+							</div>
+						</v-btn>
 					</div>
-				</v-btn>
+				</v-row>
+				<v-divider @mouseout="outFocus()" />
 			</template>
 
 			<v-list-item
+				@keydown.esc="closeForm"
 				class="pa-7"
 				:style="{ background: 'rgba(240, 240, 245, 0.82)' }"
 			>
@@ -25,7 +60,7 @@
 					<v-form ref="form" lazy-validation class="mb-3">
 						<v-text-field
 							class="py-2 mr-2"
-							v-model="memo.title"
+							v-model="data.title"
 							:rules="memoTitleRules"
 							label="memo_title:"
 							dense
@@ -36,23 +71,24 @@
 							ref="modalTop"
 						></v-text-field>
 
-						<!-- <v-textarea
+						<!-- <v-text-field
 							class="py-2 mr-2"
-							v-model="memo.memo_content"
-							label="memo_description:"
+							v-model="data.short_id"
+							label="公開リンクの末尾 : "
 							dense
 							auto-grow
-							prepend-icon="mdi-text"
-							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
-						></v-textarea> -->
+							prepend-icon="mdi-identifier"
+							readonly
+						></v-text-field> -->
 
-						<tiptap v-model="memo.content" @input="getTiptapInput" />
+						<tiptap v-model="data.content" @input="getTiptapInput" />
+						<!-- <tiptap v-model="data.content" /> -->
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
 							<v-spacer />
 
-							<v-btn icon color="success" @click="saveEditMemo(memo)">
+							<v-btn icon color="success" @click="saveEditMemo(data)">
 								<div>
 									<v-icon>mdi-check-circle</v-icon>
 									<v-list-item-title class="text-caption">
@@ -88,7 +124,7 @@ import Tiptap from "@/components/editor/Tiptap";
 
 export default {
 	props: {
-		memo: {},
+		data: {},
 	},
 	components: {
 		Tiptap,
@@ -98,6 +134,7 @@ export default {
 			isOpen: false,
 			tiptapInput: null,
 			intro: null,
+			nowFocus: false,
 			// title: "",
 			// description: "",
 		};
@@ -118,21 +155,20 @@ export default {
 				this.$refs.modalTop.focus();
 			});
 		},
-		async saveEditMemo(memo) {
+		async saveEditMemo(data) {
 			if (this.$refs.form.validate()) {
 				try {
 					const current_user =
 						this.$store.getters["auth/reference_currentUser"];
 					const editMemoParams = {
 						memo: {
-							title: memo.title,
-							// memo_content: memo.memo_content,
-							intro: this.intro || memo.intro,
-							content: this.tiptapInput || memo.content,
+							title: data.title,
+							intro: this.intro || data.intro,
+							content: this.tiptapInput || data.content,
 						},
 					};
 					await axios.patch(
-						`/api/users/${current_user.id}/memos/${memo.id}`,
+						`/api/users/${current_user.id}/memos/${data.id}`,
 						editMemoParams
 					);
 					this.closeForm();
@@ -142,7 +178,7 @@ export default {
 			}
 		},
 		getTiptapInput(value) {
-			console.log(value);
+			// console.log(value);
 			this.tiptapInput = value;
 			// HTMLデータをDOM要素に変換
 			const parser = new DOMParser();
@@ -156,10 +192,32 @@ export default {
 			// console.log(intro_text);
 			this.intro = intro_text;
 		},
+		async deleteMemo(data) {
+			try {
+				const current_user = this.$store.getters["auth/reference_currentUser"];
+				const deleteMemoParams = {
+					memo: {
+						id: data.id,
+					},
+				};
+				await axios.delete(`/api/memos/${data.id}`, deleteMemoParams);
+				this.closeForm();
+			} catch (error) {
+				alert(error.response.data.error.messages);
+			}
+		},
+		onFocus() {
+			this.nowFocus = true;
+		},
+		outFocus() {
+			this.nowFocus = false;
+		},
+		openForm() {
+			this.isOpen = true;
+			this.formFocus();
+		},
 		closeForm() {
 			this.isOpen = false;
-			// this.title = "";
-			// this.description = "";
 		},
 	},
 };

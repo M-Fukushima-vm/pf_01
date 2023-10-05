@@ -36,27 +36,12 @@
 					v-if="this.memos.length"
 					two-line
 					:style="{ background: 'transparent' }"
-					width="300"
+					width="350"
 				>
 					<template v-for="memo in memos">
-						<v-list-item :key="memo.id" link three-line>
-							<v-list-item-content>
-								<v-row align="center">
-									<v-col>
-										<v-list-item-title
-											v-text="memo.title"
-											class="subtitle-1 text--secondary"
-										></v-list-item-title>
-										<v-list-item-subtitle
-											v-text="memo.intro"
-											class="caption"
-										></v-list-item-subtitle>
-									</v-col>
-									<edit-memo-modal :memo="memo" />
-								</v-row>
-							</v-list-item-content>
-						</v-list-item>
-						<v-divider />
+						<div :key="memo.id">
+							<item-memo :memoData="memo" />
+						</div>
 					</template>
 				</v-list>
 
@@ -79,11 +64,13 @@
 <script>
 import axios from "axios";
 import qs from "qs";
-import editMemoModal from "@/components/modal/EditMemoModal";
+import itemMemo from "@/components/listItem/ItemMemo";
+// import editMemoModal from "@/components/modal/EditMemoModal";
 
 export default {
 	components: {
-		editMemoModal,
+		itemMemo,
+		// editMemoModal,
 	},
 	// props: {
 	//

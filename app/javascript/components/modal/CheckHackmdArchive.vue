@@ -121,28 +121,28 @@ export default {
 		// onFocus() {
 		// 	this.$emit("openButton");
 		// },
-		async saveNewMemo() {
-			// if (this.$refs.form.validate()) {
-			// 	try {
-			// 		const newMemoParams = {
-			// 			memo: {
-			// 				memo_title: this.title,
-			// 				memo_content: this.description,
-			// 			},
-			// 		};
-			// 		await axios.post(`/api/memos`, newMemoParams);
-			// 	} catch (error) {
-			// 		alert(error.response.data.error.messages);
-			// 	}
-			// }
-		},
+		// async saveNewMemo() {
+		// if (this.$refs.form.validate()) {
+		// 	try {
+		// 		const newMemoParams = {
+		// 			memo: {
+		// 				memo_title: this.title,
+		// 				memo_content: this.description,
+		// 			},
+		// 		};
+		// 		await axios.post(`/api/memos`, newMemoParams);
+		// 	} catch (error) {
+		// 		alert(error.response.data.error.messages);
+		// 	}
+		// }
+		// },
 		checkSourceLink() {
 			window.open(this.data.link, "_blank");
 		},
 		closeForm() {
 			this.isOpen = false;
-			this.title = "";
-			this.description = "";
+			// this.title = "";
+			// this.description = "";
 		},
 	},
 };

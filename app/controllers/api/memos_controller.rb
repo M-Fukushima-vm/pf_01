@@ -41,13 +41,17 @@ class Api::MemosController < ApplicationController
 
 
 	def destroy
-		debugger
+		# debugger
+		memo = current_user.memos.find(params[:id])
+		memo.destroy!
+		# render json: memo, serializer: MemoSerializer
+		# debugger
 	end
 
 	private
 
 	def target_params
-		params.require(:memo).permit(:title, :intro, :content)
+		params.require(:memo).permit(:id, :title, :intro, :content)
 	end
 
 	def search_params
