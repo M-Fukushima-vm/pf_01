@@ -13,7 +13,7 @@
 				</div>
 			</v-btn> -->
 		</v-row>
-		<v-divider />
+		<!-- <v-divider /> -->
 	</div>
 </template>
 

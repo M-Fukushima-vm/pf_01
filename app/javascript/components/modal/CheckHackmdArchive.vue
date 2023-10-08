@@ -2,24 +2,66 @@
 	<div>
 		<v-dialog v-model="isOpen" hide-overlay width="600px">
 			<template #activator="{ on }" class="py-n1">
-				<v-list-item three-line>
-					<v-list-item-content v-on="on">
-						<v-list-item-title class="subtitle-1 text--secondary mb-n3">
-							{{ data.title }}
-						</v-list-item-title>
-						<v-list-item-subtitle class="text-caption">
-							公開リンク末尾 : {{ data.short_id }}
-						</v-list-item-subtitle>
-					</v-list-item-content>
-					<v-btn icon class="mx-4 mt-1" @click="">
-						<div>
-							<v-icon color="grey darken-1" small class="mb-n1">
-								mdi-arrow-collapse-down
-							</v-icon>
-							<v-list-item-title class="text-caption">Import</v-list-item-title>
+				<v-row align="center">
+					<v-col @mouseover="onFocus" @mouseout="outFocus">
+						<v-list-item @focus="onFocus" link two-line>
+							<v-list-item-content v-on="on">
+								<v-list-item-title
+									v-if="data.title.length >= 24"
+									v-html="data.title.substring(0, 24) + '…'"
+									class="subtitle-1 text--secondary mb-1"
+								/>
+								<!-- {{ data.title }}
+								</v-list-item-title> -->
+								<v-list-item-title
+									v-else
+									v-html="data.title"
+									class="subtitle-1 text--secondary mb-1"
+								/>
+								<v-list-item-subtitle class="text-caption">
+									公開リンク末尾 : {{ data.short_id }}
+								</v-list-item-subtitle>
+							</v-list-item-content>
+						</v-list-item>
+					</v-col>
+					<v-card-actions align="center">
+						<div @mouseover="onFocus" @mouseout="outFocus">
+							<v-btn
+								v-show="nowFocus"
+								@blur=""
+								icon
+								color="secondary"
+								class="mt-1 ml-n3 mr-2"
+								@click=""
+							>
+								<div>
+									<v-icon small class="mb-n1"> mdi-arrow-collapse-down </v-icon>
+									<v-list-item-title class="text-caption"
+										>Import</v-list-item-title
+									>
+								</div>
+							</v-btn>
 						</div>
-					</v-btn>
-				</v-list-item>
+						<div @mouseover="onFocus" @mouseout="outFocus">
+							<v-btn
+								v-show="nowFocus"
+								@blur="outFocus"
+								icon
+								color="error"
+								class="mt-1 mr-n3 ml-2"
+								@click=""
+							>
+								<div>
+									<v-icon class="mb-n1"> mdi-trash-can-outline </v-icon>
+									<v-list-item-title class="text-caption"
+										>delete</v-list-item-title
+									>
+								</div>
+							</v-btn>
+						</div>
+					</v-card-actions>
+				</v-row>
+				<v-divider @mouseout="outFocus" />
 			</template>
 
 			<v-list-item
@@ -98,6 +140,7 @@ export default {
 	data() {
 		return {
 			isOpen: false,
+			nowFocus: false,
 			// title: "",
 			// description: "",
 		};
@@ -138,6 +181,16 @@ export default {
 		// },
 		checkSourceLink() {
 			window.open(this.data.link, "_blank");
+		},
+		onFocus() {
+			this.nowFocus = true;
+		},
+		outFocus() {
+			this.nowFocus = false;
+		},
+		openForm() {
+			this.isOpen = true;
+			this.formFocus();
 		},
 		closeForm() {
 			this.isOpen = false;
