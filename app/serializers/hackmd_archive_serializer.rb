@@ -1,4 +1,4 @@
 class HackmdArchiveSerializer < ActiveModel::Serializer
-  attributes :title, :link, :short_id
+  attributes :id, :title, :link, :short_id
 
 end

@@ -16,8 +16,8 @@
 					hint="入力内容で絞り込み表示 (フォーカスは shift + space )"
 					persistent-placeholder
 					placeholder="title"
-					v-model="query.noteTitle"
-					@input=""
+					v-model="query.title"
+					@input="callFetchArchives"
 					v-shortkey.once="['shift', 'space']"
 					@shortkey.native="searchFocus"
 					ref="searchHackmd"
@@ -57,8 +57,12 @@
 				<!-- <import-hackmd-notes-list /> -->
 			</v-col>
 			<v-col justify="center" class="mr-9 px-9">
-				<hackmd-archives-list :title="query.noteTitle" />
-				<!-- <hackmd-notes-list :title="query.noteTitle" /> -->
+				<hackmd-archives-list
+					ref="hackmdArchivesList"
+					:title="query.title"
+					:archives="importedArchives.hackmd_archives"
+				/>
+				<!-- <hackmd-notes-list :title="query.title" /> -->
 			</v-col>
 		</v-row>
 	</div>
@@ -81,7 +85,11 @@ export default {
 	data() {
 		return {
 			query: {
-				noteTitle: "",
+				title: "",
+				// noteTitle: "",
+			},
+			importedArchives: {
+				hackmd_archives: [],
 			},
 		};
 	},
@@ -95,13 +103,18 @@ export default {
 		async createArchives() {
 			try {
 				const res = await axios.post(`/api/hackmd_archives`);
+				this.importedArchives = res.data;
+				location.reload();
 			} catch (error) {
-				// console.log(error.response.data);
+				console.log(error.response.data);
 				const statusCode = error.response.status;
 				const errorDetails = error.response.data.message;
 				const errorMessages = error.response.data.errors;
 				alert(`${statusCode} : ${errorDetails}\n${errorMessages}`);
 			}
+		},
+		callFetchArchives() {
+			this.$nextTick(() => this.$refs.hackmdArchivesList.fetchHackmdArchives());
 		},
 	},
 };

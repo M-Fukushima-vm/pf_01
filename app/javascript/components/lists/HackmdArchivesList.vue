@@ -7,8 +7,8 @@
 		</v-row>
 		<div v-if="this.hackmdArchives !== []">
 			<template v-for="archive in hackmdArchives">
-				<div :key="archive.short_id">
-					<item-hackmd-archive :archiveData="archive" />
+				<div :key="archive.id">
+					<item-hackmd-archive :archiveData="archive" @delete="deleteArchive" />
 				</div>
 			</template>
 			<template v-if="pagingMeta">
@@ -43,6 +43,7 @@ import itemHackmdArchive from "@/components/listItem/ItemHackmdArchive";
 export default {
 	props: {
 		title: String,
+		archives: Array,
 	},
 	components: {
 		itemHackmdArchive,
@@ -52,21 +53,34 @@ export default {
 			hackmdArchives: [],
 			currentPage: 1,
 			pagingMeta: null,
-			searchQuery: "",
+			// searchQuery: "",
+			addArchives: [],
 			// onFocus: false,
 		};
 	},
 	watch: {
-		searchQuery(newValue) {
-			this.searchQuery = newValue;
-			this.searchHackmdArchives();
+		// searchQuery(newValue) {
+		// 	this.searchQuery = newValue;
+		// 	// this.fetchHackmdArchives();
+		// },
+		archives: {
+			handler(newArchives) {
+				// addArchivesを更新
+				this.addArchives = newArchives;
+			},
+			immediate: true,
+		},
+		addArchives: {
+			handler() {
+				// addArchivesが変更されたら、要素を追加
+				this.addArchivesToHackmdArchives();
+			},
+			deep: true, // addArchives内部の変更も監視
 		},
 	},
-	computed: {
-		searchHackmdArchives() {
-			this.fetchHackmdArchives();
-		},
-	},
+	// computed: {
+	//
+	// },
 	created() {
 		this.fetchHackmdArchives();
 	},
@@ -101,6 +115,30 @@ export default {
 				console.log(error.response.data);
 				// console.error(error.message);
 			}
+		},
+		deleteArchive(obj) {
+			// 表示データ(data) の配列操作
+			// hackmdArchivesの配列内 から 同じidのデータを削除
+			const delete_archive = this.hackmdArchives.findIndex(
+				({ id }) => id === obj.id
+			);
+			if (delete_archive !== -1) {
+				this.hackmdArchives.splice(delete_archive, 1);
+			}
+		},
+		addArchivesToHackmdArchives() {
+			// 配列addArchivesの先頭に 配列archiveの要素を追加
+			this.addArchives.forEach((archive) => {
+				this.hackmdArchives.splice(0, 0, { ...archive });
+			});
+			// spliceの第1引数は追加する位置のインデックス、第2引数は削除する要素の数（消さない場合は0）、第3引数以降は新しい要素
+
+			// 配列addArchivesの末尾に 配列archiveの要素を追加
+			// this.addArchives.forEach((archive) => {
+			// 	this.$set(this.hackmdArchives, this.hackmdArchives.length, {
+			// 		...archive,
+			// 	});
+			// });
 		},
 	},
 };

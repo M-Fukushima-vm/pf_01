@@ -2,13 +2,13 @@
 	<div>
 		<v-dialog v-model="isOpen" hide-overlay width="600px">
 			<template #activator="{ on }" class="py-n1">
-				<v-row align="center">
+				<v-row align="center" no-gutters>
 					<v-col @mouseover="onFocus" @mouseout="outFocus">
 						<v-list-item @focus="onFocus" link two-line>
 							<v-list-item-content v-on="on">
 								<v-list-item-title
-									v-if="data.title.length >= 24"
-									v-html="data.title.substring(0, 24) + '…'"
+									v-if="data.title.length >= 22"
+									v-html="data.title.substring(0, 22) + '…'"
 									class="subtitle-1 text--secondary mb-1"
 								/>
 								<!-- {{ data.title }}
@@ -24,14 +24,14 @@
 							</v-list-item-content>
 						</v-list-item>
 					</v-col>
-					<v-card-actions align="center">
+					<v-card-actions align="center" no-gutters>
 						<div @mouseover="onFocus" @mouseout="outFocus">
 							<v-btn
 								v-show="nowFocus"
 								@blur=""
 								icon
 								color="secondary"
-								class="mt-1 ml-n3 mr-2"
+								class="mt-1 mr-2"
 								@click=""
 							>
 								<div>
@@ -48,8 +48,8 @@
 								@blur="outFocus"
 								icon
 								color="error"
-								class="mt-1 mr-n3 ml-2"
-								@click=""
+								class="mt-1 ml-2"
+								@click="deleteArchive"
 							>
 								<div>
 									<v-icon class="mb-n1"> mdi-trash-can-outline </v-icon>
@@ -65,6 +65,7 @@
 			</template>
 
 			<v-list-item
+				@keydown.esc="closeForm"
 				class="pa-7"
 				:style="{ background: 'rgba(240, 240, 245, 0.82)' }"
 			>
@@ -161,24 +162,21 @@ export default {
 				this.$refs.modalTop.focus();
 			});
 		},
-		// onFocus() {
-		// 	this.$emit("openButton");
-		// },
-		// async saveNewMemo() {
-		// if (this.$refs.form.validate()) {
-		// 	try {
-		// 		const newMemoParams = {
-		// 			memo: {
-		// 				memo_title: this.title,
-		// 				memo_content: this.description,
-		// 			},
-		// 		};
-		// 		await axios.post(`/api/memos`, newMemoParams);
-		// 	} catch (error) {
-		// 		alert(error.response.data.error.messages);
-		// 	}
-		// }
-		// },
+		async deleteArchive() {
+			try {
+				// console.log(this.data.id);
+				// const archiveParams = {
+				// 	archive: {
+				// 		title: data.title,
+				// 	},
+				// };
+				const archive = this.data;
+				await axios.delete(`/api/hackmd_archives/${this.data.id}`);
+				this.$emit("delete", archive);
+			} catch (error) {
+				alert(error.response.data.error.messages);
+			}
+		},
 		checkSourceLink() {
 			window.open(this.data.link, "_blank");
 		},
@@ -194,8 +192,6 @@ export default {
 		},
 		closeForm() {
 			this.isOpen = false;
-			// this.title = "";
-			// this.description = "";
 		},
 	},
 };

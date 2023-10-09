@@ -1,19 +1,10 @@
 <template>
 	<div>
-		<v-row align="center" no-gutters>
-			<v-col>
-				<check-hackmd-archive :data="archiveData" />
-			</v-col>
-			<!-- <v-btn icon class="mx-4 mt-1" @click="">
-				<div>
-					<v-icon color="grey darken-1" small class="mb-n1">
-						mdi-arrow-collapse-down
-					</v-icon>
-					<v-list-item-title class="text-caption">Import</v-list-item-title>
-				</div>
-			</v-btn> -->
-		</v-row>
-		<!-- <v-divider /> -->
+		<check-hackmd-archive
+			:data="archiveData"
+			@delete="deleteArchive"
+			@update=""
+		/>
 	</div>
 </template>
 
@@ -29,13 +20,14 @@ export default {
 	},
 	data() {
 		return {
-			// nowFocus: false,
+			// archive: null,
 		};
 	},
 	methods: {
-		// onFocus() {
-		// 	this.nowFocus = true;
-		// },
+		deleteArchive(obj) {
+			// this.archive = archive;
+			this.$emit("delete", obj);
+		},
 		// outFocus() {
 		// 	this.nowFocus = false;
 		// },
