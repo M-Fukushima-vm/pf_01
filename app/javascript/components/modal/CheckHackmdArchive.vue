@@ -188,7 +188,10 @@ export default {
 				};
 				const params = { ...noteParams };
 				const paramsSerializer = (params) => qs.stringify(params);
-				await axios.post(`/api/hackmd_notes`, { params, paramsSerializer });
+				await axios.post(`/api/hackmd_notes`, {
+					...params,
+					paramsSerializer,
+				});
 				// this.$emit("delete", archive);
 			} catch (error) {
 				alert(error.response.data.error.messages);
