@@ -32,7 +32,7 @@
 								icon
 								color="secondary"
 								class="mt-1 mr-2"
-								@click=""
+								@click="createNote"
 							>
 								<div>
 									<v-icon small class="mb-n1"> mdi-arrow-collapse-down </v-icon>
@@ -133,6 +133,7 @@
 
 <script>
 import axios from "axios";
+import qs from "qs";
 
 export default {
 	props: {
@@ -173,6 +174,22 @@ export default {
 				const archive = this.data;
 				await axios.delete(`/api/hackmd_archives/${this.data.id}`);
 				this.$emit("delete", archive);
+			} catch (error) {
+				alert(error.response.data.error.messages);
+			}
+		},
+		async createNote() {
+			try {
+				const noteParams = {
+					hackmd_note: {
+						title: this.data.title,
+						short_id: this.data.short_id,
+					},
+				};
+				const params = { ...noteParams };
+				const paramsSerializer = (params) => qs.stringify(params);
+				await axios.post(`/api/hackmd_notes`, { params, paramsSerializer });
+				// this.$emit("delete", archive);
 			} catch (error) {
 				alert(error.response.data.error.messages);
 			}
