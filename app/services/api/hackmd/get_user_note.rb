@@ -23,7 +23,7 @@ module Api::Hackmd::GetUserNote
 			# 概要データの生成
 			document = Loofah.fragment(html_content)
 			clean_text = document.text(encode_special_chars: false)
-			intro_data = clean_text.gsub(/\n/, '')[0..199] # 改行文字\nを除いて先頭200文字を抽出
+			intro_data = clean_text.gsub(/\n/, '')[0..149] # 改行文字\nを除いて先頭150文字を抽出
 			# 保存用データの整形
 			save_data = {
 				title: user_note_data[:title],

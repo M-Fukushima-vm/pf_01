@@ -119,14 +119,17 @@ export default {
 		async saveNewMemo() {
 			if (this.$refs.form.validate()) {
 				try {
-					const newMemoParams = {
-						memo: {
-							title: this.title,
-							// memo_content: this.description,
-							intro: this.intro,
-							content: this.tiptapInput,
-						},
-					};
+					this.getTiptapInput();
+					this.$nextTick(() => {
+						const newMemoParams = {
+							memo: {
+								title: this.title,
+								// memo_content: this.description,
+								intro: this.intro,
+								content: this.tiptapInput,
+							},
+						};
+					});
 					await axios.post(`/api/memos`, newMemoParams);
 					this.closeForm();
 				} catch (error) {

@@ -160,11 +160,11 @@ export default {
 	watch: {
 		value(value) {
 			// HTML
-			// const isSame = this.editor.getHTML() === value
+			const isSame = this.editor.getHTML() === value;
 
 			// JSON
-			const isSame =
-				JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
+			// const isSame =
+			// JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
 
 			if (isSame) {
 				// console.log(isSame);
@@ -216,7 +216,7 @@ export default {
 	}
 
 	p {
-		line-height: 0.6;
+		// line-height: 0.6;
 		font-size: 0.85rem;
 	}
 

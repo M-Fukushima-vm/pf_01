@@ -26,7 +26,7 @@ Rails.application.routes.draw do
 		resources :memos, only: %i[create destroy]
 		resource :hackmd_account, only: %i[create destroy]
 		resources :hackmd_archives, only: %i[create destroy index]
-		resources :hackmd_notes, only: %i[create destroy index]
+		resources :hackmd_notes, only: %i[create destroy index update]
 
     namespace :me do
       resource :account, only: %i[update destroy]

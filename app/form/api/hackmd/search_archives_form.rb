@@ -1,4 +1,4 @@
-class Api::Hackmd::SearchHackmdArchivesForm
+class Api::Hackmd::SearchArchivesForm
 
   include ActiveModel::Model
   include ActiveModel::Attributes

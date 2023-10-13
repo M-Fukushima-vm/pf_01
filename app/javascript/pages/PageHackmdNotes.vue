@@ -7,7 +7,8 @@
 				* HackMD の情報一覧を表示しています *
 			</v-col>
 		</v-row>
-		<v-row class="justify-center">
+		<v-row justify="center" class="ml-n12">
+			<v-spacer />
 			<v-card outlined color="transparent" class="justify-center">
 				<v-text-field
 					class="pt-n3 mt-n4 pb-3"
@@ -17,7 +18,7 @@
 					persistent-placeholder
 					placeholder="title"
 					v-model="query.title"
-					@input="callFetchArchives"
+					@input="callFetchData"
 					v-shortkey.once="['shift', 'space']"
 					@shortkey.native="searchFocus"
 					ref="searchHackmd"
@@ -28,7 +29,7 @@
 				<template v-slot:activator="{ on }">
 					<v-btn
 						icon
-						class="ml-9 mr-1 mt-3"
+						class="ml-7 mr-1 mt-3"
 						align="center"
 						v-on="on"
 						@click="createArchives"
@@ -49,21 +50,27 @@
 				</div>
 			</v-tooltip>
 			<v-col>
-				<hackmd-info-button class="ml-9" justify="right" />
+				<hackmd-info-button />
+				<!-- <v-spacer class="mr-2" /> -->
 			</v-col>
+			<!-- <v-spacer class="mr-2" /> -->
 		</v-row>
 		<v-row>
-			<v-col>
-				<!-- <import-hackmd-notes-list /> -->
+			<v-col justify="center" class="px-4">
+				<hackmd-notes-list
+					ref="hackmdNotesList"
+					:title="query.title"
+					:notes="importedData.hackmd_notes"
+				/>
 			</v-col>
-			<v-col justify="center" class="mr-9 px-9">
+			<v-col justify="center" class="px-4">
 				<hackmd-archives-list
 					ref="hackmdArchivesList"
 					:title="query.title"
-					:archives="importedArchives.hackmd_archives"
+					:archives="importedData.hackmd_archives"
 				/>
-				<!-- <hackmd-notes-list :title="query.title" /> -->
 			</v-col>
+			<v-spacer />
 		</v-row>
 	</div>
 </template>
@@ -72,7 +79,7 @@
 import axios from "axios";
 import memosToolBar from "@/components/toolBar/MemosToolBar";
 import hackmdInfoButton from "@/components/floatingButton/HackmdInfoButton";
-// import hackmdNotesList from "@/components/lists/HackmdNotesList";
+import hackmdNotesList from "@/components/lists/HackmdNotesList";
 import hackmdArchivesList from "@/components/lists/HackmdArchivesList";
 
 export default {
@@ -80,7 +87,7 @@ export default {
 		memosToolBar,
 		hackmdInfoButton,
 		hackmdArchivesList,
-		// hackmdNotesList,
+		hackmdNotesList,
 	},
 	data() {
 		return {
@@ -88,8 +95,9 @@ export default {
 				title: "",
 				// noteTitle: "",
 			},
-			importedArchives: {
+			importedData: {
 				hackmd_archives: [],
+				hackmd_notes: [],
 			},
 		};
 	},
@@ -103,7 +111,7 @@ export default {
 		async createArchives() {
 			try {
 				const res = await axios.post(`/api/hackmd_archives`);
-				this.importedArchives = res.data;
+				this.importedData.hackmd_archives = res.data;
 				location.reload();
 			} catch (error) {
 				console.log(error.response.data);
@@ -113,7 +121,8 @@ export default {
 				alert(`${statusCode} : ${errorDetails}\n${errorMessages}`);
 			}
 		},
-		callFetchArchives() {
+		callFetchData() {
+			this.$nextTick(() => this.$refs.hackmdNotesList.fetchHackmdNotes());
 			this.$nextTick(() => this.$refs.hackmdArchivesList.fetchHackmdArchives());
 		},
 	},

@@ -5,7 +5,7 @@ class Api::HackmdArchivesController < ApplicationController
 
 	def index
 		# archives = HackmdArchive.where(user_id: current_user.id)
-		archives_form = Api::Hackmd::SearchHackmdArchivesForm.new(search_params)
+		archives_form = Api::Hackmd::SearchArchivesForm.new(search_params)
 		archives = archives_form.search( current_user.id ).order(updated_at: :desc)
 		archives = archives.page(params[:page]).per(PAGINATES_PAR)
 		render json: archives, each_serializer: HackmdArchiveSerializer,
