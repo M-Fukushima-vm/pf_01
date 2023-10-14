@@ -38,6 +38,8 @@ gem 'faraday'
 
 gem 'redcarpet'
 
+gem 'rouge'
+
 gem 'loofah'
 
 # Use Active Storage variant

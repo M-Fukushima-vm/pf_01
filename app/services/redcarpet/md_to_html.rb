@@ -1,6 +1,11 @@
 module Redcarpet::MdToHtml
 	extend self
-  class HTML < Redcarpet::Render::HTML; end
+
+	require 'rouge/plugins/redcarpet'
+
+  class HTML < Redcarpet::Render::HTML
+		include Rouge::Plugins::Redcarpet
+	end
 
   def change_html(text)
     render_options = {
@@ -20,6 +25,26 @@ module Redcarpet::MdToHtml
       escape_html:        true, # xss対策 全てのHTMLタグをエスケープ(filter_htmlより優先) 
       quote:              true  # xss対策 引用符を表す「""」を認識
     }
-    Redcarpet::Markdown.new(renderer, extensions).render(text).html_safe
+		
+		# マークダウンをHTMLに変換
+    html_output = Redcarpet::Markdown.new(renderer, extensions).render(text)
+
+		# Tiptap向けに、コードブロックを変換
+		formatted_output = html_output.gsub(/<div class="highlight"><pre class="highlight (.*?)"><code>(.*?)<\/code><\/pre><\/div>|<code.*?>(.*?)<\/code>/m) do
+			language = Regexp.last_match(1)
+			code_block = Regexp.last_match(2) || Regexp.last_match(3)
+			
+			if language
+				code_block.rstrip! # 末尾の空白を削除
+				code_block.gsub!(/<span.*?>(.*?)<\/span>/m, '\1') # <span>タグを削除
+				"<pre><code class=\"language-#{language}\">#{code_block}</code></pre>"
+			else
+				code_block.gsub(/<span.*?>(.*?)<\/span>/m, '\1') # <span>タグを削除
+			end
+		end
+
+    formatted_output.html_safe
+
+		# debugger
   end
 end

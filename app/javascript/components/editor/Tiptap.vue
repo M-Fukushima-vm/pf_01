@@ -123,6 +123,7 @@ lowlight.registerLanguage("bash", bash);
 lowlight.registerLanguage("css", css);
 lowlight.registerLanguage("go", go);
 lowlight.registerLanguage("js", javascript);
+lowlight.registerLanguage("javascript", javascript);
 lowlight.registerLanguage("json", json);
 lowlight.registerLanguage("md", markdown);
 lowlight.registerLanguage("php", php);
@@ -133,6 +134,7 @@ lowlight.registerLanguage("shell", shell);
 lowlight.registerLanguage("sql", sql);
 lowlight.registerLanguage("swift", swift);
 lowlight.registerLanguage("ts", typescript);
+lowlight.registerLanguage("typescript", typescript);
 lowlight.registerLanguage("html", xml);
 lowlight.registerLanguage("yaml", yaml);
 
