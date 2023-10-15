@@ -1,22 +1,18 @@
 <template>
 	<div>
-		<check-hackmd-archive
-			:data="archiveData"
-			@delete="deleteArchive"
-			@update=""
-		/>
+		<check-hackmd-note :data="noteData" @delete="deleteNote" />
 	</div>
 </template>
 
 <script>
-import checkHackmdArchive from "@/components/modal/CheckHackmdArchive";
+import checkHackmdNote from "@/components/modal/CheckHackmdNote";
 
 export default {
 	props: {
-		archiveData: {},
+		noteData: {},
 	},
 	components: {
-		checkHackmdArchive,
+		checkHackmdNote,
 	},
 	data() {
 		return {
@@ -24,7 +20,7 @@ export default {
 		};
 	},
 	methods: {
-		deleteArchive(obj) {
+		deleteNote(obj) {
 			// this.archive = archive;
 			this.$emit("delete", obj);
 		},

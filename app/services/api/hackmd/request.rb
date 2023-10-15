@@ -7,7 +7,7 @@ module Api::Hackmd::Request
 		connection(token).get('notes', { readPermission: 'guest'})
 	end
 
-	def get_user_notes(token, id)
+	def get_user_note(token, id)
 		uri = URI.parse("notes/#{id}")
 		connection(token).get(uri, { readPermission: 'guest'})
 	end

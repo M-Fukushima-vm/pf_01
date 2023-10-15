@@ -25,8 +25,8 @@ Rails.application.routes.draw do
     resources :seen_followers, param: :passive_user_id, only: :create
 		resources :memos, only: %i[create destroy]
 		resource :hackmd_account, only: %i[create destroy]
-		resources :hackmd_archives, only: %i[create index]
-		resources :hackmd_user_notes, only: %i[index]
+		resources :hackmd_archives, only: %i[create destroy index]
+		resources :hackmd_notes, only: %i[create destroy index update]
 
     namespace :me do
       resource :account, only: %i[update destroy]

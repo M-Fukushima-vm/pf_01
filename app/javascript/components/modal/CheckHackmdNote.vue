@@ -11,16 +11,16 @@
 									v-html="data.title.substring(0, 19) + '…'"
 									class="subtitle-1 text--secondary mb-1"
 								/>
-								<!-- {{ data.title }}
-								</v-list-item-title> -->
 								<v-list-item-title
 									v-else
 									v-html="data.title"
 									class="subtitle-1 text--secondary mb-1"
 								/>
-								<v-list-item-subtitle class="text-caption">
-									公開リンク末尾 : {{ data.short_id }}
-								</v-list-item-subtitle>
+								<v-list-item-subtitle
+									v-if="data.intro.length >= 35"
+									v-html="data.intro.substring(0, 34) + '…'"
+									class="text-caption"
+								/>
 							</v-list-item-content>
 						</v-list-item>
 					</v-col>
@@ -28,28 +28,11 @@
 						<div @mouseover="onFocus" @mouseout="outFocus">
 							<v-btn
 								v-show="nowFocus"
-								@blur=""
-								icon
-								color="secondary"
-								class="mt-1 mr-2"
-								@click="createNote"
-							>
-								<div>
-									<v-icon small class="mb-n1"> mdi-arrow-collapse-down </v-icon>
-									<v-list-item-title class="text-caption"
-										>Import</v-list-item-title
-									>
-								</div>
-							</v-btn>
-						</div>
-						<div @mouseover="onFocus" @mouseout="outFocus">
-							<v-btn
-								v-show="nowFocus"
 								@blur="outFocus"
 								icon
 								color="error"
 								class="mt-1 ml-2"
-								@click="deleteArchive"
+								@click="deleteNote"
 							>
 								<div>
 									<v-icon class="mb-n1"> mdi-trash-can-outline </v-icon>
@@ -79,6 +62,7 @@
 						<v-text-field
 							class="py-2 mr-2"
 							v-model="data.title"
+							:rules="noteTitleRules"
 							label="title:"
 							dense
 							required
@@ -87,25 +71,17 @@
 							ref="modalTop"
 						></v-text-field>
 
-						<v-text-field
-							class="py-2 mr-2"
-							v-model="data.short_id"
-							label="公開リンクの末尾 : "
-							dense
-							auto-grow
-							prepend-icon="mdi-identifier"
-							readonly
-						></v-text-field>
+						<tiptap v-model="data.content" @input="getTiptapInput" />
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
 							<v-spacer />
 
-							<v-btn icon @click="checkSourceLink" color="success">
+							<v-btn icon @click="updateNote(data)" color="success">
 								<div>
-									<v-icon>mdi-open-in-new</v-icon>
+									<v-icon>mdi-check-circle</v-icon>
 									<v-list-item-title class="text-caption"
-										>check</v-list-item-title
+										>update</v-list-item-title
 									>
 								</div>
 							</v-btn>
@@ -134,24 +110,30 @@
 <script>
 import axios from "axios";
 import qs from "qs";
+import Tiptap from "@/components/editor/Tiptap";
 
 export default {
 	props: {
 		data: {},
 	},
+	components: {
+		Tiptap,
+	},
 	data() {
 		return {
 			isOpen: false,
 			nowFocus: false,
+			tiptapInput: null,
+			intro: null,
 			// title: "",
 			// description: "",
 		};
 	},
 	computed: {
-		// memoTitleRules() {
-		// 	// 必須入力
-		// 	return [(v) => !!v || "Titleは必ず入力してください"];
-		// },
+		noteTitleRules() {
+			// 必須入力
+			return [(v) => !!v || "Titleは必ず入力してください"];
+		},
 	},
 	mounted() {
 		//
@@ -163,42 +145,52 @@ export default {
 				this.$refs.modalTop.focus();
 			});
 		},
-		async deleteArchive() {
+		async deleteNote() {
 			try {
-				// console.log(this.data.id);
-				// const archiveParams = {
-				// 	archive: {
-				// 		title: data.title,
-				// 	},
-				// };
-				const archive = this.data;
-				await axios.delete(`/api/hackmd_archives/${this.data.id}`);
-				this.$emit("delete", archive);
+				const note = this.data;
+				await axios.delete(`/api/hackmd_notes/${this.data.id}`);
+				this.$emit("delete", note);
 			} catch (error) {
 				alert(error.response.data.error.messages);
 			}
 		},
-		async createNote() {
-			try {
-				const noteParams = {
-					hackmd_note: {
-						title: this.data.title,
-						short_id: this.data.short_id,
-					},
-				};
-				const params = { ...noteParams };
-				const paramsSerializer = (params) => qs.stringify(params);
-				await axios.post(`/api/hackmd_notes`, {
-					...params,
-					paramsSerializer,
-				});
-				// this.$emit("delete", archive);
-			} catch (error) {
-				alert(error.response.data.error.messages);
-			}
+		getTiptapInput(value) {
+			// console.log(value);
+			this.tiptapInput = value;
+			// // HTMLデータをDOM要素に変換
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(value, "text/html");
+			// // テキストを抽出する
+			const text = doc.body.innerText;
+			// // 最初の150文字を抜き出す
+			const intro_text = text.substring(0, 150);
+			this.intro = intro_text;
 		},
-		checkSourceLink() {
-			window.open(this.data.link, "_blank");
+		async updateNote(data) {
+			if (this.$refs.form.validate()) {
+				try {
+					// this.getTiptapInput();
+					// const current_user =
+					// 	this.$store.getters["auth/reference_currentUser"];
+					const editNoteParams = {
+						hackmd_note: {
+							title: data.title,
+							intro: this.intro || data.intro,
+							content: this.tiptapInput || data.content,
+						},
+					};
+					const params = { ...editNoteParams };
+					const paramsSerializer = (params) => qs.stringify(params);
+					await axios.patch(`/api/hackmd_notes/${data.id}`, {
+						...params,
+						paramsSerializer,
+					});
+					this.closeForm();
+				} catch (error) {
+					console.log(error);
+					// alert(error.response.data.error.messages);
+				}
+			}
 		},
 		onFocus() {
 			this.nowFocus = true;

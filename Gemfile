@@ -36,7 +36,11 @@ gem 'lockbox'
 
 gem 'faraday'
 
+gem 'redcarpet'
 
+gem 'rouge'
+
+gem 'loofah'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'

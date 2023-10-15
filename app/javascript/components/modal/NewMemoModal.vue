@@ -34,7 +34,7 @@
 							ref="modalTop"
 						></v-text-field>
 
-						<v-textarea
+						<!-- <v-textarea
 							class="py-2 mr-2"
 							v-model="description"
 							label="memo_description:"
@@ -42,7 +42,9 @@
 							auto-grow
 							prepend-icon="mdi-text"
 							hint="ー 補足 or 本文として 入力してください ー * 任意入力 *"
-						></v-textarea>
+						></v-textarea> -->
+
+						<tiptap @input="getTiptapInput" />
 
 						<v-card-actions class="mt-n1 mb-n7">
 							<v-spacer />
@@ -80,16 +82,22 @@
 
 <script>
 import axios from "axios";
+import Tiptap from "@/components/editor/Tiptap";
 
 export default {
 	// props: {
 	//
 	// },
+	components: {
+		Tiptap,
+	},
 	data() {
 		return {
 			isOpen: false,
 			title: "",
 			description: "",
+			tiptapInput: null,
+			intro: null,
 		};
 	},
 	computed: {
@@ -98,9 +106,9 @@ export default {
 			return [(v) => !!v || "Titleは必ず入力してください"];
 		},
 	},
-	mounted() {
-		//
-	},
+	// mounted() {
+	//
+	// },
 	methods: {
 		async formFocus() {
 			await (this.isOpen = true);
@@ -111,22 +119,44 @@ export default {
 		async saveNewMemo() {
 			if (this.$refs.form.validate()) {
 				try {
-					const newMemoParams = {
-						memo: {
-							memo_title: this.title,
-							memo_content: this.description,
-						},
-					};
+					this.getTiptapInput();
+					this.$nextTick(() => {
+						const newMemoParams = {
+							memo: {
+								title: this.title,
+								// memo_content: this.description,
+								intro: this.intro,
+								content: this.tiptapInput,
+							},
+						};
+					});
 					await axios.post(`/api/memos`, newMemoParams);
+					this.closeForm();
 				} catch (error) {
 					alert(error.response.data.error.messages);
 				}
 			}
 		},
+		getTiptapInput(value) {
+			// console.log(value);
+			this.tiptapInput = value;
+			// HTMLデータをDOM要素に変換
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(value, "text/html");
+			// テキストを抽出する
+			// const text = doc.body.textContent || doc.body.innerText;
+			const text = doc.body.innerText;
+			// console.log(text);
+			// 最初の150文字を抜き出す
+			const intro_text = text.substring(0, 150);
+			// console.log(intro_text);
+			this.intro = intro_text;
+		},
 		closeForm() {
 			this.isOpen = false;
 			this.title = "";
 			this.description = "";
+			this.tiptapInput = "";
 		},
 	},
 };

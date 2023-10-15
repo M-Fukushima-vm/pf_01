@@ -2,13 +2,13 @@
 	<v-list :style="{ background: 'transparent' }" width="380px">
 		<v-row class="text-center text-caption grey--text my-1 mx-5" align="center">
 			<v-divider class="px-n9 mx-7" />
-			Archives
+			Imported Notes
 			<v-divider class="px-n9 mx-7" />
 		</v-row>
-		<div v-if="this.hackmdArchives !== []">
-			<template v-for="archive in hackmdArchives">
-				<div :key="archive.id">
-					<item-hackmd-archive :archiveData="archive" @delete="deleteArchive" />
+		<div v-if="this.hackmdNotes !== []">
+			<template v-for="note in hackmdNotes">
+				<div :key="note.id">
+					<item-hackmd-note :noteData="note" @delete="deleteNotes" />
 				</div>
 			</template>
 			<template v-if="pagingMeta">
@@ -38,23 +38,23 @@
 <script>
 import axios from "axios";
 import qs from "qs";
-import itemHackmdArchive from "@/components/listItem/ItemHackmdArchive";
+import itemHackmdNote from "@/components/listItem/ItemHackmdNote";
 
 export default {
 	props: {
 		title: String,
-		archives: Array,
+		notes: Array,
 	},
 	components: {
-		itemHackmdArchive,
+		itemHackmdNote,
 	},
 	data() {
 		return {
-			hackmdArchives: [],
+			hackmdNotes: [],
 			currentPage: 1,
 			pagingMeta: null,
 			// searchQuery: "",
-			addArchives: [],
+			addNotes: [],
 			// onFocus: false,
 		};
 	},
@@ -63,34 +63,34 @@ export default {
 		// 	this.searchQuery = newValue;
 		// 	// this.fetchHackmdArchives();
 		// },
-		archives: {
-			handler(newArchives) {
-				// addArchivesを更新
-				this.addArchives = newArchives;
+		notes: {
+			handler(newNotes) {
+				// addNotesを更新
+				this.addNotes = newNotes;
 			},
 			immediate: true,
 		},
-		addArchives: {
+		addNotes: {
 			handler() {
-				// addArchivesが変更されたら、要素を追加
-				this.addArchivesToHackmdArchives();
+				// addNotesが変更されたら、要素を追加
+				this.addNotesToHackmdNotes();
 			},
-			deep: true, // addArchives内部の変更も監視
+			deep: true, // addNotes内部の変更も監視
 		},
 	},
 	// computed: {
 	//
 	// },
 	created() {
-		this.fetchHackmdArchives();
+		this.fetchHackmdNotes();
 	},
 	methods: {
 		paging(pageNumber) {
 			this.currentPage = pageNumber;
-			this.fetchHackmdArchives();
+			this.fetchHackmdNotes();
 			this.$vuetify.goTo(0);
 		},
-		async fetchHackmdArchives() {
+		async fetchHackmdNotes() {
 			const searchParams = {
 				q: {
 					title: this.title,
@@ -100,13 +100,13 @@ export default {
 			const params = { ...searchParams, ...pagingParams };
 			const paramsSerializer = (params) => qs.stringify(params);
 			try {
-				const res = await axios.get(`/api/hackmd_archives`, {
+				const res = await axios.get(`/api/hackmd_notes`, {
 					params,
 					paramsSerializer,
 				});
 				if (res) {
 					// console.log(res);
-					this.hackmdArchives = res.data.hackmd_archives;
+					this.hackmdNotes = res.data.hackmd_notes;
 					this.pagingMeta = res.data.meta;
 					this.currentPage = 1;
 				}
@@ -116,27 +116,25 @@ export default {
 				// console.error(error.message);
 			}
 		},
-		deleteArchive(obj) {
+		deleteNotes(obj) {
 			// 表示データ(data) の配列操作
-			// hackmdArchivesの配列内 から 同じidのデータを削除
-			const delete_archive = this.hackmdArchives.findIndex(
-				({ id }) => id === obj.id
-			);
-			if (delete_archive !== -1) {
-				this.hackmdArchives.splice(delete_archive, 1);
+			// hackmdNotesの配列内 から 同じidのデータを削除
+			const delete_note = this.hackmdNotes.findIndex(({ id }) => id === obj.id);
+			if (delete_note !== -1) {
+				this.hackmdNotes.splice(delete_note, 1);
 			}
 		},
-		addArchivesToHackmdArchives() {
-			// 配列addArchivesの先頭に 配列archiveの要素を追加
-			this.addArchives.forEach((archive) => {
-				this.hackmdArchives.splice(0, 0, { ...archive });
+		addNotesToHackmdNotes() {
+			// 配列hackmdNotesの先頭に 配列addNotesの要素を追加
+			this.addNotes.forEach((note) => {
+				this.hackmdNotes.splice(0, 0, { ...note });
 			});
 			// spliceの第1引数は追加する位置のインデックス、第2引数は削除する要素の数（消さない場合は0）、第3引数以降は新しい要素
 
-			// 配列addArchivesの末尾に 配列archiveの要素を追加
-			// this.addArchives.forEach((archive) => {
-			// 	this.$set(this.hackmdArchives, this.hackmdArchives.length, {
-			// 		...archive,
+			// 配列hackmdNotesの末尾に 配列addNotesの要素を追加
+			// this.addNotes.forEach((archive) => {
+			// 	this.$set(this.hackmdNotes, this.hackmdNotees.length, {
+			// 		...note,
 			// 	});
 			// });
 		},
