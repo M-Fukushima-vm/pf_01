@@ -7,8 +7,8 @@
 						<v-list-item @focus="onFocus" link two-line>
 							<v-list-item-content v-on="on">
 								<v-list-item-title
-									v-if="data.title.length >= 22"
-									v-html="data.title.substring(0, 22) + '…'"
+									v-if="data.title.length >= 20"
+									v-html="data.title.substring(0, 19) + '…'"
 									class="subtitle-1 text--secondary mb-1"
 								/>
 								<!-- {{ data.title }}

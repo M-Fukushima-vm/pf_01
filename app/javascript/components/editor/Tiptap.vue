@@ -80,6 +80,18 @@
 				>
 					Bullet List
 				</button>
+				<button
+					@click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+					:class="{ 'is-active': editor.isActive('heading', { level: 5 }) }"
+				>
+					H5
+				</button>
+				<button
+					@click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+					:class="{ 'is-active': editor.isActive('heading', { level: 6 }) }"
+				>
+					H6
+				</button>
 			</floating-menu>
 		</div>
 
@@ -153,7 +165,7 @@ export default {
 	data() {
 		return {
 			editor: null,
-			limit: 5000,
+			limit: 20000,
 		};
 	},
 	// created() {

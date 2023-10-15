@@ -7,8 +7,8 @@
 						<v-list-item @focus="onFocus" link two-line>
 							<v-list-item-content v-on="on">
 								<v-list-item-title
-									v-if="data.title.length >= 22"
-									v-html="data.title.substring(0, 22) + '…'"
+									v-if="data.title.length >= 20"
+									v-html="data.title.substring(0, 19) + '…'"
 									class="subtitle-1 text--secondary mb-1"
 								/>
 								<v-list-item-title
@@ -17,8 +17,8 @@
 									class="subtitle-1 text--secondary mb-1"
 								/>
 								<v-list-item-subtitle
-									v-if="data.intro.length >= 39"
-									v-html="data.intro.substring(0, 39) + '…'"
+									v-if="data.intro.length >= 35"
+									v-html="data.intro.substring(0, 34) + '…'"
 									class="text-caption"
 								/>
 							</v-list-item-content>
